@@ -3,6 +3,7 @@ package dev.tom.cannoncore.config;
 import dev.splityosis.configsystem.configsystem.AnnotatedConfig;
 import dev.splityosis.configsystem.configsystem.ConfigField;
 import dev.splityosis.configsystem.configsystem.ConfigHeader;
+import lombok.Getter;
 
 import java.io.File;
 
@@ -15,6 +16,7 @@ public class FeaturesConfig extends AnnotatedConfig {
     /*
     TNTFill
      */
+    @Getter
     @ConfigField(path = "features.tntfill.max-radius")
-    public int maxRadius = 60;
+    public static int maxRadius = 10;
 }

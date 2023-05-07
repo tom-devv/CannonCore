@@ -38,6 +38,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+<!--                            <outputDirectory>C:\Users\thoma\Desktop\Purpur\plugins</outputDirectory>-->
 <!--                            <shadedArtifactAttached>true</shadedArtifactAttached>-->
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
