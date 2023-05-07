@@ -20,6 +20,7 @@ public abstract class CannonCoreCommand {
     public abstract SYSCommand command();
 
     public void registerCommand(){
+        command().setPermission(CannonCore.BASE_COMMAND_PERMISSION + command().getName());
         command().registerCommand(CannonCore.getPlugin());
     }
 

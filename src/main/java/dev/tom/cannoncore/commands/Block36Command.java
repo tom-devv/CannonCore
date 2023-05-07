@@ -2,24 +2,17 @@ package dev.tom.cannoncore.commands;
 
 import dev.splityosis.commandsystem.SYSCommand;
 import dev.tom.cannoncore.commands.conditions.PlotEditCondition;
-import dev.tom.cannoncore.config.FeaturesConfig;
 import dev.tom.cannoncore.objects.CannonPlayer;
-import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Dispenser;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.stream.Collectors;
+public class Block36Command extends CannonCoreCommand{
 
-public class TNTFillCommand extends CannonCoreCommand {
 
     private final String[] aliases;
 
-    public TNTFillCommand(String... aliases){
+    public Block36Command(String... aliases){
         super(aliases);
         this.aliases = aliases;
     }
@@ -27,14 +20,10 @@ public class TNTFillCommand extends CannonCoreCommand {
     @Override
     public SYSCommand command() {
         return
-                new SYSCommand(aliases)
-                .setConditions(new PlotEditCondition())
+        new SYSCommand(aliases)
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = new CannonPlayer(player);
-                    cannonPlayer.fillRadius(new ItemStack(Material.TNT, 64));
-        });
-
+                    cannonPlayer.fillRadius(new ItemStack(Material.AIR, 1));
+                });
     }
-
-
 }

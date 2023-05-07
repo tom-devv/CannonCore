@@ -2,5 +2,5 @@ name: CannonCore
 version: '${project.version}'
 main: dev.tom.cannoncore.CannonCore
 api-version: 1.19
-depend:
-  - PlotSquared
+#depend:
+#  - PlotSquared

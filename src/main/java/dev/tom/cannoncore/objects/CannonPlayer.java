@@ -2,14 +2,20 @@ package dev.tom.cannoncore.objects;
 
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
+import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Data;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class CannonPlayer {
@@ -30,7 +36,7 @@ public class CannonPlayer {
      */
 
     public List<Block> getNearbyBlocks(int radius) {
-        World world = player.getLocation().getWorld();
+        World world = getPlayer().getLocation().getWorld();
         List<Block> blocks = new ArrayList<>();
         if(world == null) return blocks;
 
@@ -72,5 +78,28 @@ public class CannonPlayer {
             return true;
         }
         return plot.getTrusted().contains(getPlotPlayer().getUUID());
+    }
+
+
+    /**
+     *
+     * @param itemStack
+     * Fills dispensers with an itemstack in a radius
+     */
+
+    public void fillRadius(ItemStack itemStack){
+        List<Block> dispensers = getNearbyBlocks(FeaturesConfig.getMaxRadius())
+                .stream()
+                .filter(b -> b.getType().equals(Material.DISPENSER))
+                .collect(Collectors.toList());
+
+
+        for (int i = 0; i < dispensers.size(); i++) {
+            Dispenser dispenser = (Dispenser) dispensers.get(i).getState();
+            Inventory inventory = dispenser.getInventory();
+            for (int j = 0; j < 9; j++) {
+                inventory.setItem(j, itemStack);
+            }
+        }
     }
 }
