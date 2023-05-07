@@ -15,7 +15,7 @@ public class PlotCondition extends SYSCondition {
         if(!(commandSender instanceof Player)) return false;
         PlotPlayer<Player> player = PlotPlayer.from((Player) commandSender);
         Plot plot = player.getCurrentPlot();
-        return plot.getTrusted().contains(player.getUUID());
+        return plot.getTrusted().contains(player.getUUID()) || plot.getOwner() == player.getUUID();
     }
 
     @Override
