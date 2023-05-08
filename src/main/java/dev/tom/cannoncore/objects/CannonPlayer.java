@@ -1,7 +1,6 @@
 package dev.tom.cannoncore.objects;
 
-import com.plotsquared.core.player.PlotPlayer;
-import com.plotsquared.core.plot.Plot;
+
 import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Data;
 import lombok.Getter;
@@ -21,11 +20,11 @@ import java.util.stream.Collectors;
 public class CannonPlayer {
 
     private final Player player;
-    private final PlotPlayer<Player> plotPlayer;
+//    private final PlotPlayer<Player> plotPlayer;
 
     public CannonPlayer(Player player){
         this.player = player;
-        this.plotPlayer = PlotPlayer.from(player);
+//        this.plotPlayer = PlotPlayer.from(player);
     }
 
 
@@ -54,31 +53,31 @@ public class CannonPlayer {
         return blocks;
     }
 
-    /**
-     * Checks if the player is a member of the plot
-     * @return If the player can build
-     */
-
-    public boolean canBuild(){
-        Plot plot = getPlotPlayer().getCurrentPlot();
-        return plot.getMembers().contains(getPlotPlayer().getUUID());
-
-    }
-
-    /**
-     * Checks if the player is trusted or a plot owner
-     * @return If the player has elevated permissions on the plot
-     */
-
-    public boolean canEdit(){
-        Plot plot = getPlotPlayer().getCurrentPlot();
-        System.out.println(plot.getOwner());
-        System.out.println(getPlotPlayer().getUUID());
-        if(plot.getOwner() == getPlotPlayer().getUUID()){
-            return true;
-        }
-        return plot.getTrusted().contains(getPlotPlayer().getUUID());
-    }
+//    /**
+//     * Checks if the player is a member of the plot
+//     * @return If the player can build
+//     */
+//
+//    public boolean canBuild(){
+//        Plot plot = getPlotPlayer().getCurrentPlot();
+//        return plot.getMembers().contains(getPlotPlayer().getUUID());
+//
+//    }
+//
+//    /**
+//     * Checks if the player is trusted or a plot owner
+//     * @return If the player has elevated permissions on the plot
+//     */
+//
+//    public boolean canEdit(){
+//        Plot plot = getPlotPlayer().getCurrentPlot();
+//        System.out.println(plot.getOwner());
+//        System.out.println(getPlotPlayer().getUUID());
+//        if(plot.getOwner() == getPlotPlayer().getUUID()){
+//            return true;
+//        }
+//        return plot.getTrusted().contains(getPlotPlayer().getUUID());
+//    }
 
 
     /**

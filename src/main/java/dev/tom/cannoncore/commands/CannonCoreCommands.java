@@ -11,6 +11,7 @@ public class CannonCoreCommands {
     public CannonCoreCommands(CannonCore plugin){
         new TNTFillCommand("tntfill", "tf").registerCommand();
         new UnfillCommand("tntunfill", "tntclear").registerCommand();
+        new Block36Command("block36").registerCommand();
     }
 
 }

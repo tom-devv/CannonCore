@@ -1,8 +1,9 @@
 package dev.tom.cannoncore;
 
-import com.plotsquared.core.PlotAPI;
 import dev.tom.cannoncore.commands.CannonCoreCommands;
 import dev.tom.cannoncore.config.FeaturesConfig;
+import dev.tom.cannoncore.listeners.Block36Events;
+import dev.tom.cannoncore.listeners.ProtectionBlockEvent;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,8 +17,8 @@ public final class CannonCore extends JavaPlugin {
     @Getter
     public static CannonCore plugin;
 
-    @Getter
-    public static PlotAPI plotAPI;
+//    @Getter
+//    public static PlotAPI plotAPI;
 
     @Getter
     public static FeaturesConfig featuresConfig;
@@ -28,6 +29,8 @@ public final class CannonCore extends JavaPlugin {
         PlotSquaredHook();
         configs();
         new CannonCoreCommands(this);
+        new Block36Events(this);
+        new ProtectionBlockEvent(this);
     }
 
     private void PlotSquaredHook(){

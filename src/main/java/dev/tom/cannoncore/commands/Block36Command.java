@@ -2,6 +2,7 @@ package dev.tom.cannoncore.commands;
 
 import dev.splityosis.commandsystem.SYSCommand;
 import dev.tom.cannoncore.commands.conditions.PlotEditCondition;
+import dev.tom.cannoncore.items.Block36Item;
 import dev.tom.cannoncore.objects.CannonPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,7 +24,8 @@ public class Block36Command extends CannonCoreCommand{
         new SYSCommand(aliases)
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = new CannonPlayer(player);
-                    cannonPlayer.fillRadius(new ItemStack(Material.AIR, 1));
+                    Block36Item block36Item = new Block36Item(player);
+                    block36Item.giveItem();
                 });
     }
 }

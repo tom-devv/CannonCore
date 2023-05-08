@@ -1,7 +1,6 @@
 package dev.tom.cannoncore.commands.conditions;
 
-import com.plotsquared.core.player.PlotPlayer;
-import com.plotsquared.core.plot.Plot;
+
 import dev.splityosis.commandsystem.SYSCondition;
 import dev.tom.cannoncore.objects.CannonPlayer;
 import org.bukkit.command.CommandSender;
