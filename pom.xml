@@ -71,6 +71,12 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <!-- CodeMC -->
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+            <layout>default</layout>
+        </repository>
     </repositories>
 
     <dependencyManagement>
@@ -112,6 +118,12 @@
             <groupId>com.github.SplitYoSis</groupId>
             <artifactId>ConfigSystem</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.11.2</version>
+<!--            <scope>provided</scope> Uncomment to shade-->
         </dependency>
     </dependencies>
 </project>

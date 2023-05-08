@@ -1,0 +1,8 @@
+dev\tom\cannoncore\config\FeaturesConfig.class
+dev\tom\cannoncore\commands\TNTFillCommand.class
+dev\tom\cannoncore\commands\conditions\PlotEditCondition.class
+dev\tom\cannoncore\CannonCore.class
+dev\tom\cannoncore\commands\CannonCoreCommand.class
+dev\tom\cannoncore\objects\CannonPlayer.class
+dev\tom\cannoncore\commands\conditions\PlotBuildCondition.class
+dev\tom\cannoncore\commands\CannonCoreCommands.class
