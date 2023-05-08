@@ -1,6 +1,0 @@
-name: CannonCore
-version: '1.0-SNAPSHOT'
-main: dev.tom.cannoncore.CannonCore
-api-version: 1.19
-depend:
-  - PlotSquared
