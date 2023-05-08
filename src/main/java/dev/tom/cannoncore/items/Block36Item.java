@@ -19,12 +19,10 @@ public class Block36Item {
     public static List<Block36Item> block36Locations = new ArrayList<>();
     private final Player player;
     private final ItemStack block36Item;
-//    private final ArmorStand armorStand;
 
     public Block36Item(Player player){
         this.player = player;
         this.block36Item = createItem();
-//        this.armorStand = createArmorStand();
     }
 
     private ItemStack createItem(){

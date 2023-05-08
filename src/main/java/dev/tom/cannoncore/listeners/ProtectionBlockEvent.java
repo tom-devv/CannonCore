@@ -50,7 +50,7 @@ public class ProtectionBlockEvent implements Listener {
                 e.blockList().remove(block);
                 continue;
             }
-            for (int y = -64-block.getY(); y < 321-block.getY(); y++) {
+            for (int y = -63 -block.getY(); y < 321-block.getY(); y++) {
                 Block iBlock = block.getRelative(0, y, 0);
                 if (FeaturesConfig.materials.contains(iBlock.getType().name())){
                     protectedPairs.add(pairHash);

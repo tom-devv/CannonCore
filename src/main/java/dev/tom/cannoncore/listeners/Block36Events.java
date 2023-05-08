@@ -27,7 +27,7 @@ public class Block36Events implements Listener {
 
         if(!e.getBlock().getType().equals(Material.PLAYER_HEAD) && !e.getBlock().getType().equals(Material.PLAYER_WALL_HEAD)) return; // Prevents any code being ran most of time
         if(!Block36Item.isBlock36(e.getItemInHand())) return;
-        e.setCancelled(true);
+//        e.setCancelled(true);
 
         Block block = e.getBlock();
         block.setType(Material.MOVING_PISTON);
