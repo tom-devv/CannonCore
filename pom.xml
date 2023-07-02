@@ -38,7 +38,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>C:\Users\thoma\Desktop\Purpur\plugins</outputDirectory>
+                            <outputDirectory>C:\Users\thoma\Desktop\Prism\plugins</outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>com.github.SplitYoSis</groupId>
             <artifactId>ConfigSystem</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>

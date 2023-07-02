@@ -2,6 +2,7 @@ package dev.tom.cannoncore;
 
 import dev.tom.cannoncore.commands.CannonCoreCommands;
 import dev.tom.cannoncore.config.FeaturesConfig;
+import dev.tom.cannoncore.items.CannonItemManager;
 import dev.tom.cannoncore.listeners.Block36Events;
 import dev.tom.cannoncore.listeners.ProtectionBlockEvent;
 import lombok.Getter;
@@ -13,9 +14,13 @@ import java.io.File;
 public final class CannonCore extends JavaPlugin {
 
     public static String BASE_COMMAND_PERMISSION = "cannoncore.command.";
+    public static String NBT_IDENTIFIER = "identifier";
+
 
     @Getter
-    public static CannonCore plugin;
+    public static CannonCore core;
+
+    public static CannonItemManager cannonItemManager;
 
 //    @Getter
 //    public static PlotAPI plotAPI;
@@ -25,12 +30,16 @@ public final class CannonCore extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        plugin = this;
+        core = this;
         PlotSquaredHook();
         configs();
         new CannonCoreCommands(this);
         new Block36Events(this);
         new ProtectionBlockEvent(this);
+
+
+        cannonItemManager = new CannonItemManager(this);
+        cannonItemManager.registerCannonItems();
     }
 
     private void PlotSquaredHook(){

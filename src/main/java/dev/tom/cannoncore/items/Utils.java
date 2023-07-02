@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Manager {
+public class Utils {
 
 
     public static ItemStack createItemStack(Material material, int amount, String name, List<String> lore){

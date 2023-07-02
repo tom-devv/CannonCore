@@ -4,6 +4,7 @@ package dev.tom.cannoncore.objects;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Data;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -12,19 +13,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
 public class CannonPlayer {
 
-    private final Player player;
-//    private final PlotPlayer<Player> plotPlayer;
+    private  Player player = null;
+    private UUID uuid = null;
+    public static Map<UUID, CannonPlayer> cannonPlayerMap = new HashMap<>();
 
     public CannonPlayer(Player player){
         this.player = player;
-//        this.plotPlayer = PlotPlayer.from(player);
+        this.uuid = player.getUniqueId();
+        cannonPlayerMap.put(this.uuid, this);
+    }
+
+    public CannonPlayer(UUID uuid){
+        new CannonPlayer(Objects.requireNonNull(Bukkit.getPlayer(uuid)));
     }
 
 
@@ -101,4 +107,14 @@ public class CannonPlayer {
             }
         }
     }
+
+    public static CannonPlayer getCannonPlayer(UUID uuid){
+        if(cannonPlayerMap.containsKey(uuid)) return cannonPlayerMap.get(uuid);
+        return new CannonPlayer(uuid);
+    }
+
+    public static CannonPlayer getCannonPlayer(Player player){
+        return getCannonPlayer(player.getUniqueId());
+    }
+
 }

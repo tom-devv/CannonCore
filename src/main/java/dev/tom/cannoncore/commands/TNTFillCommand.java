@@ -17,17 +17,15 @@ import java.util.stream.Collectors;
 
 public class TNTFillCommand extends CannonCoreCommand {
 
-    private final String[] aliases;
 
     public TNTFillCommand(String... aliases){
         super(aliases);
-        this.aliases = aliases;
     }
 
     @Override
     public SYSCommand command() {
         return
-                new SYSCommand(aliases)
+                new SYSCommand(getAliases())
                 .setConditions(new PlotEditCondition())
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = new CannonPlayer(player);
