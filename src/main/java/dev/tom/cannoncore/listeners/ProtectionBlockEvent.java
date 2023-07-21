@@ -18,7 +18,18 @@ import java.util.stream.Collectors;
 
 public class ProtectionBlockEvent implements Listener {
 
+    private static Set<Material> protBlocks = new HashSet<>();
+
     public ProtectionBlockEvent(CannonCore plugin){
+
+        for (String material : FeaturesConfig.materials) {
+            try {
+                protBlocks.add(Material.valueOf(material.toUpperCase()));
+            }catch (Exception e){
+                //
+            }
+        }
+
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         new BukkitRunnable(){
@@ -30,12 +41,12 @@ public class ProtectionBlockEvent implements Listener {
         }.runTaskTimer(plugin, 0, 0);
     }
 
-    private List<Integer> protectedPairs = new ArrayList<>();
+    private Set<Integer> protectedPairs = new HashSet<>();
     private Map<Integer, List<Block>> protectedTriplets = new HashMap<>();
 
     @EventHandler
     public void TNTExplodeEvent(EntityExplodeEvent e){
-        int tripletHash = Objects.hash(e.getLocation().getWorld(), e.getLocation().getBlockX(), e.getLocation().getBlockY(), e.getLocation().getBlockZ());
+        int tripletHash = Objects.hash(e.getLocation().getWorld(), e.getLocation().getX(), e.getLocation().getY(), e.getLocation().getZ());
         List<Block> already = protectedTriplets.get(tripletHash);
         if (already != null){
             e.blockList().clear();
@@ -50,7 +61,7 @@ public class ProtectionBlockEvent implements Listener {
                 e.blockList().remove(block);
                 continue;
             }
-            for (int y = -63 -block.getY(); y < 321-block.getY(); y++) {
+            for (int y = -64-block.getY(); y < 321-block.getY(); y++) {
                 Block iBlock = block.getRelative(0, y, 0);
                 if (FeaturesConfig.materials.contains(iBlock.getType().name())){
                     protectedPairs.add(pairHash);
