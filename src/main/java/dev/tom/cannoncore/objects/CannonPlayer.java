@@ -1,6 +1,9 @@
 package dev.tom.cannoncore.objects;
 
 
+import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
+import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Data;
 import lombok.Getter;
@@ -13,19 +16,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
 public class CannonPlayer {
 
-    private  Player player = null;
+    private Player player = null;
+    private PlotPlayer<Player> plotPlayer;
     private UUID uuid = null;
     public static Map<UUID, CannonPlayer> cannonPlayerMap = new HashMap<>();
 
     public CannonPlayer(Player player){
         this.player = player;
         this.uuid = player.getUniqueId();
+        this.plotPlayer = PlotPlayer.from(player);
         cannonPlayerMap.put(this.uuid, this);
     }
 
@@ -59,31 +65,31 @@ public class CannonPlayer {
         return blocks;
     }
 
-//    /**
-//     * Checks if the player is a member of the plot
-//     * @return If the player can build
-//     */
-//
-//    public boolean canBuild(){
-//        Plot plot = getPlotPlayer().getCurrentPlot();
-//        return plot.getMembers().contains(getPlotPlayer().getUUID());
-//
-//    }
-//
-//    /**
-//     * Checks if the player is trusted or a plot owner
-//     * @return If the player has elevated permissions on the plot
-//     */
-//
-//    public boolean canEdit(){
-//        Plot plot = getPlotPlayer().getCurrentPlot();
-//        System.out.println(plot.getOwner());
-//        System.out.println(getPlotPlayer().getUUID());
-//        if(plot.getOwner() == getPlotPlayer().getUUID()){
-//            return true;
-//        }
-//        return plot.getTrusted().contains(getPlotPlayer().getUUID());
-//    }
+    /**
+     * Checks if the player is a member of the plot
+     * @return If the player can build
+     */
+
+    public boolean canBuild(){
+        Plot plot = getPlotPlayer().getCurrentPlot();
+        return plot.getMembers().contains(getPlotPlayer().getUUID());
+
+    }
+
+    /**
+     * Checks if the player is trusted or a plot owner
+     * @return If the player has elevated permissions on the plot
+     */
+
+    public boolean canEdit(){
+        Plot plot = getPlotPlayer().getCurrentPlot();
+        System.out.println(plot.getOwner());
+        System.out.println(getPlotPlayer().getUUID());
+        if(plot.getOwner() == getPlotPlayer().getUUID()){
+            return true;
+        }
+        return plot.getTrusted().contains(getPlotPlayer().getUUID());
+    }
 
 
     /**
@@ -97,7 +103,6 @@ public class CannonPlayer {
                 .stream()
                 .filter(b -> b.getType().equals(Material.DISPENSER))
                 .collect(Collectors.toList());
-
 
         for (int i = 0; i < dispensers.size(); i++) {
             Dispenser dispenser = (Dispenser) dispensers.get(i).getState();
@@ -117,4 +122,8 @@ public class CannonPlayer {
         return getCannonPlayer(player.getUniqueId());
     }
 
+
+    public PlotPlayer<Player> getPlotPlayer() {
+        return plotPlayer;
+    }
 }

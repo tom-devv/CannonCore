@@ -9,8 +9,8 @@ import org.bukkit.inventory.ItemStack;
 public class UnfillCommand extends CannonCoreCommand{
 
 
-    public UnfillCommand(String... aliases){
-        super(aliases);
+    public UnfillCommand(){
+        super("unfill", "uf", "tntunfill", "tfunfill");
     }
 
     @Override

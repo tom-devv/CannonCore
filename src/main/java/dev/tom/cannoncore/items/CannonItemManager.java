@@ -21,8 +21,8 @@ public class CannonItemManager {
         Block36 block36 = new Block36();
         cannonItemMap.put(block36.getId(), block36);
 
-        MagicSand magicSand = new MagicSand();
-        cannonItemMap.put(magicSand.getId(), magicSand);
+//        MagicSand magicSand = new MagicSand();
+//        cannonItemMap.put(magicSand.getId(), magicSand);
     }
 
     public static Map<String, AbstractCannonItem> getCannonItemMap() {

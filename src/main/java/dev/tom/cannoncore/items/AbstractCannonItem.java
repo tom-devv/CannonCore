@@ -1,22 +1,22 @@
 package dev.tom.cannoncore.items;
 
-import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.iface.ReadableItemNBT;
+
 import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.objects.CannonPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.function.Function;
 
 public abstract class AbstractCannonItem {
 
     private ItemStack cannonItemStack;
     private final String id;
 
-    /**
-     * Links a cannon item to a player for better tracking and readability
-     * @param id
-     * @param itemStack
-     */
+
     public AbstractCannonItem(String id, ItemStack itemStack){
         this.cannonItemStack = itemStack;
         this.id = id;
@@ -50,7 +50,7 @@ public abstract class AbstractCannonItem {
      * @return The type of cannon item that it is
      */
     private boolean resolveItem(ItemStack itemStack, String type){
-        String itemType = NBT.get(itemStack, nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER));
+        String itemType = NBT.get(itemStack, (Function<ReadableItemNBT, String>) nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER));
         return itemType.equalsIgnoreCase(type);
     }
 

@@ -1,6 +1,10 @@
 package dev.tom.cannoncore.items;
 
-import de.tr7zw.nbtapi.*;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTListCompound;
+import de.tr7zw.changeme.nbtapi.iface.ReadableItemNBT;
 import dev.tom.cannoncore.CannonCore;
 import lombok.Getter;
 import org.bukkit.Location;
@@ -12,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 
 @Getter
@@ -69,7 +74,7 @@ public class Block36 extends AbstractCannonItem {
      * @return If the itemStack is of type block36
      */
     public static boolean isBlock36(ItemStack itemStack){
-        return NBT.get(itemStack, nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER)).equalsIgnoreCase("block36");
+        return NBT.get(itemStack, (Function<ReadableItemNBT, String>) nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER)).equals("block36");
     }
 
 

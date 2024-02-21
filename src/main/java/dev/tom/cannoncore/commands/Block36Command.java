@@ -8,17 +8,15 @@ import dev.tom.cannoncore.objects.CannonPlayer;
 public class Block36Command extends CannonCoreCommand{
 
 
-    private final String[] aliases;
 
-    public Block36Command(String... aliases){
-        super(aliases);
-        this.aliases = aliases;
+    public Block36Command(){
+        super("block36");
     }
 
     @Override
     public SYSCommand command() {
         return
-        new SYSCommand(aliases)
+        new SYSCommand(getAliases())
                 .executesPlayer((player, strings) -> {
                     Block36 block36Item = (Block36) CannonItemManager.getCannonItemMap().get("block36");
                     block36Item.giveItem(player);

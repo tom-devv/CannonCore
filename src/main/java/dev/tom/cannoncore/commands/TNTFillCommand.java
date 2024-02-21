@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 public class TNTFillCommand extends CannonCoreCommand {
 
 
-    public TNTFillCommand(String... aliases){
-        super(aliases);
+    public TNTFillCommand(){
+        super("tntfill", "tf");
     }
 
     @Override
@@ -30,6 +30,7 @@ public class TNTFillCommand extends CannonCoreCommand {
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = new CannonPlayer(player);
                     cannonPlayer.fillRadius(new ItemStack(Material.TNT, 64));
+                    player.sendMessage();
         });
 
     }
