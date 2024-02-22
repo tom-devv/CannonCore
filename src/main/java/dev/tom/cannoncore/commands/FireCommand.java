@@ -36,7 +36,8 @@ public class FireCommand extends CannonCoreCommand implements Listener {
                     if(block == null) {
                         player.sendMessage("You have not selected a button yet!");
                         return;
-                    }
+                        
+                    } 
 
                     {
                         Block button = block;

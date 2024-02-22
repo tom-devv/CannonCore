@@ -30,7 +30,7 @@ public class TNTFillCommand extends CannonCoreCommand {
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = new CannonPlayer(player);
                     cannonPlayer.fillRadius(new ItemStack(Material.TNT, 64));
-                    player.sendMessage();
+                    player.sendMessage("&6Filled Dispensers with TNT");
         });
 
     }

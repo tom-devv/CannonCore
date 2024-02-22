@@ -21,6 +21,8 @@ public final class CannonCore extends JavaPlugin {
 
     public static Reflections reflection = new Reflections("dev.tom.cannoncore");
 
+    @Getter
+    public static boolean sakuraEnabled = false;
 
     @Getter
     public static CannonCore core;
@@ -37,6 +39,7 @@ public final class CannonCore extends JavaPlugin {
     public void onEnable() {
         core = this;
         PlotSquaredHook();
+        SakuraHook();
         configs();
         new CannonCoreCommands();
         new Block36Events(this);
@@ -53,6 +56,14 @@ public final class CannonCore extends JavaPlugin {
             System.out.println("[CannonCore]: [ERROR]: PLOTSQUARED NOT FOUND");
         }
         plotAPI = new PlotAPI();
+    }
+
+    private void SakuraHook(){
+        if(Bukkit.getServer().getName().equalsIgnoreCase("sakura")){
+            System.out.println("[CannonCore]: [INFO]: Sakura detected");
+            sakuraEnabled = true;
+        }
+
     }
 
     private void configs(){

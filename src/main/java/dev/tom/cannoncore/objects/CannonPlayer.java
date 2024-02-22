@@ -3,9 +3,8 @@ package dev.tom.cannoncore.objects;
 
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
-import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
-import lombok.Data;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,6 +37,9 @@ public class CannonPlayer {
         new CannonPlayer(Objects.requireNonNull(Bukkit.getPlayer(uuid)));
     }
 
+    public void sendMessage(String... message){
+        this.player.sendMessage(Util.colorize(message));
+    }
 
     /**
      *
@@ -70,21 +71,18 @@ public class CannonPlayer {
      * @return If the player can build
      */
 
-    public boolean canBuild(){
+    public boolean isMember(){
         Plot plot = getPlotPlayer().getCurrentPlot();
         return plot.getMembers().contains(getPlotPlayer().getUUID());
-
     }
 
-    /**
-     * Checks if the player is trusted or a plot owner
-     * @return If the player has elevated permissions on the plot
-     */
+    public Plot getCurrentPlot(){
+        return getPlotPlayer().getCurrentPlot();
+    }
 
-    public boolean canEdit(){
+
+    public boolean isTrusted(){
         Plot plot = getPlotPlayer().getCurrentPlot();
-        System.out.println(plot.getOwner());
-        System.out.println(getPlotPlayer().getUUID());
         if(plot.getOwner() == getPlotPlayer().getUUID()){
             return true;
         }

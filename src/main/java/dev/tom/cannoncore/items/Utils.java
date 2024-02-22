@@ -1,7 +1,7 @@
 package dev.tom.cannoncore.items;
 
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,11 +35,11 @@ public class Utils {
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&(#\\w{6})");
     public static String colorize(String str) {
-        Matcher matcher = HEX_PATTERN.matcher(net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', str));
+        Matcher matcher = HEX_PATTERN.matcher(ChatColor.translateAlternateColorCodes('&', str));
         StringBuffer buffer = new StringBuffer();
 
         while (matcher.find())
-            matcher.appendReplacement(buffer, net.md_5.bungee.api.ChatColor.of(matcher.group(1)).toString());
+            matcher.appendReplacement(buffer, ChatColor.valueOf(matcher.group(1)).toString());
 
         return ChatColor.translateAlternateColorCodes('&', matcher.appendTail(buffer).toString());
     }
