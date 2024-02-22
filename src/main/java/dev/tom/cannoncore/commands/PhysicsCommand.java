@@ -41,14 +41,14 @@ public class PhysicsCommand extends CannonCoreCommand implements Listener {
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent e){
         Entity entity = e.getEntity();
-        e.getEntity().setPhysicsVersion(
-                plotPhysics.get(Plot.getPlot(
+        Plot plot = Plot.getPlot(
                 Location.at(
                         entity.getLocation().getWorld().getName(),
                         entity.getLocation().getBlockX(),
                         entity.getLocation().getBlockY(),
                         entity.getLocation().getBlockZ())
-        )));
+        );
+        e.getEntity().setPhysicsVersion(plot == null ? PhysicsVersion.LATEST : plotPhysics.get(plot));
     }
 
 
