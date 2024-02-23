@@ -29,4 +29,5 @@ public class FeaturesConfig extends AnnotatedConfig {
     @Getter
     @ConfigField(path = "features.protection-blocks.types")
     public static List<String> materials = Arrays.asList("BEDROCK", "EMERALD");
+
 }

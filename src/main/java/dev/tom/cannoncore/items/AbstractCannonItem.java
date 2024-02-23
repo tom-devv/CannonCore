@@ -22,12 +22,17 @@ public abstract class AbstractCannonItem {
         this.id = id;
     }
 
+    public void applyNBT(ItemStack itemStack, String prefix){
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setString(CannonCore.NBT_IDENTIFIER + "_" + prefix, id);
+        this.cannonItemStack = nbtItem.getItem();
+    }
+
     /**
      * Applies identifier NBT data so it can be identified later
      * @param itemStack NBT modified ItemStack
      */
     public void applyNBT(ItemStack itemStack){
-        System.out.println("Applying NBT");
         NBTItem nbtItem = new NBTItem(itemStack);
         nbtItem.setString(CannonCore.NBT_IDENTIFIER, id);
         this.cannonItemStack = nbtItem.getItem();
@@ -53,7 +58,6 @@ public abstract class AbstractCannonItem {
         String itemType = NBT.get(itemStack, (Function<ReadableItemNBT, String>) nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER));
         return itemType.equalsIgnoreCase(type);
     }
-
 
     public ItemStack getCannonItemStack() {
         return cannonItemStack;

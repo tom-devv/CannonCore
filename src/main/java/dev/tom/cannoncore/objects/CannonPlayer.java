@@ -1,10 +1,13 @@
 package dev.tom.cannoncore.objects;
 
 
+import com.plotsquared.core.location.Location;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
+import dev.tom.cannoncore.magicsand.ActiveMagicsand;
+import dev.tom.cannoncore.magicsand.SandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -39,6 +42,21 @@ public class CannonPlayer {
 
     public void sendMessage(String... message){
         this.player.sendMessage(Util.colorize(message));
+    }
+
+    public void getNearbyMagicsand(boolean activeSand){
+        List<Block> nearbyBlocks = getNearbyBlocks(FeaturesConfig.getMaxRadius());
+        Location location = Location.at(player.getLocation().getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+        Plot plot = location.getPlot();
+//        if(plot == null) return null;
+//        if(activeSand){
+//            List<ActiveMagicsand> activeMagicsands = new ArrayList<>();
+//            for (Block nearbyBlock : nearbyBlocks) {
+//                if(SandManager.plotMagicSand.containsKey(nearbyBlock.getLocation())){
+//                    activeMagicsands.add(SandManager.plotMagicSand.get(nearbyBlock.getLocation()));
+//                }
+//            }
+//        }
     }
 
     /**

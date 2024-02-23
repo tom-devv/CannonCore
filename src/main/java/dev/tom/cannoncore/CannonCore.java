@@ -7,6 +7,7 @@ import dev.tom.cannoncore.items.CannonItemManager;
 import dev.tom.cannoncore.listeners.Block36Events;
 import dev.tom.cannoncore.listeners.BoneEvent;
 import dev.tom.cannoncore.listeners.ProtectionBlockEvent;
+import dev.tom.cannoncore.magicsand.SandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +18,7 @@ import java.io.File;
 public final class CannonCore extends JavaPlugin {
 
     public static String BASE_COMMAND_PERMISSION = "cannoncore.command.";
-    public static String NBT_IDENTIFIER = "identifier";
+    public static String NBT_IDENTIFIER = "cannoncore";
 
     public static Reflections reflection = new Reflections("dev.tom.cannoncore");
 
@@ -41,6 +42,7 @@ public final class CannonCore extends JavaPlugin {
         PlotSquaredHook();
         SakuraHook();
         configs();
+        new SandManager(this);
         new CannonCoreCommands();
         new Block36Events(this);
         new ProtectionBlockEvent(this);

@@ -1,6 +1,7 @@
 package dev.tom.cannoncore.items;
 
 import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.magicsand.SandManager;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
@@ -21,8 +22,9 @@ public class CannonItemManager {
         Block36 block36 = new Block36();
         cannonItemMap.put(block36.getId(), block36);
 
-//        MagicSand magicSand = new MagicSand();
-//        cannonItemMap.put(magicSand.getId(), magicSand);
+        SandManager.magicsands.forEach((material, magicsand) -> {
+            cannonItemMap.put(magicsand.getId(), magicsand);
+        });
     }
 
     public static Map<String, AbstractCannonItem> getCannonItemMap() {
