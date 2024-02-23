@@ -2,6 +2,7 @@ package dev.tom.cannoncore;
 
 import com.plotsquared.core.PlotAPI;
 import dev.tom.cannoncore.commands.CannonCoreCommands;
+import dev.tom.cannoncore.config.ChatMessages;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import dev.tom.cannoncore.items.CannonItemManager;
 import dev.tom.cannoncore.listeners.Block36Events;
@@ -35,6 +36,9 @@ public final class CannonCore extends JavaPlugin {
 
     @Getter
     public static FeaturesConfig featuresConfig;
+
+    @Getter
+    public static ChatMessages chatMessages;
 
     @Override
     public void onEnable() {
@@ -72,7 +76,9 @@ public final class CannonCore extends JavaPlugin {
         File file = new File(getDataFolder(), "config");
         file.mkdirs();
         featuresConfig = new FeaturesConfig(file, "feature-settings");
+        chatMessages = new ChatMessages(file, "chat-messages");
         featuresConfig.initialize();
+        chatMessages.initialize();
 
     }
 

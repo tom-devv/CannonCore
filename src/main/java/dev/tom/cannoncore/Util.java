@@ -3,6 +3,7 @@ package dev.tom.cannoncore;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,4 +59,16 @@ public class Util {
         });
         return newList;
     }
+
+    public static void sendMessage (Player player, String message) {
+        if (!message.isEmpty())
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    public static void sendMessage(Player player, List<String> messageList) {
+        for (String message : messageList)
+            if (!message.isEmpty())
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
 }

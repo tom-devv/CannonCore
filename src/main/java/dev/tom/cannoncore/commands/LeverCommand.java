@@ -31,11 +31,12 @@ public class LeverCommand extends CannonCoreCommand implements Listener {
         return new SYSCommand(getAliases()
         )
                 .executesPlayer((player, strings) -> {
-                    Block lever = levers.get(player.getUniqueId());
-                    if(lever == null || !lever.getType().equals(Material.LEVER)) {
-                        player.sendMessage("You have no lever selected!");
-                        return;
-                    }
+                            Block lever = levers.get(player.getUniqueId());
+                            if (lever == null || !lever.getType().equals(Material.LEVER)) {
+                                player.sendMessage("You have no lever selected!");
+                                return;
+                            }
+
                     Switch data = (Switch) lever.getBlockData();
                     data.setPowered(!data.isPowered());
                 });
@@ -49,7 +50,7 @@ public class LeverCommand extends CannonCoreCommand implements Listener {
             UUID uuid = e.getPlayer().getUniqueId();
             if(block.getType() != Material.LEVER) return;
             levers.put(uuid, block);
-            player.sendMessage("Button selected @ + X:" + block.getX() + " Y:" + block.getY() + " Z:" + block.getZ());
+            player.sendMessage("Lever selected @ + X:" + block.getX() + " Y:" + block.getY() + " Z:" + block.getZ());
 
         };
     }
