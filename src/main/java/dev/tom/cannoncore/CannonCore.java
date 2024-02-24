@@ -4,11 +4,11 @@ import com.plotsquared.core.PlotAPI;
 import dev.tom.cannoncore.commands.CannonCoreCommands;
 import dev.tom.cannoncore.config.ChatMessages;
 import dev.tom.cannoncore.config.FeaturesConfig;
-import dev.tom.cannoncore.items.CannonItemManager;
 import dev.tom.cannoncore.listeners.Block36Events;
 import dev.tom.cannoncore.listeners.BoneEvent;
 import dev.tom.cannoncore.listeners.ProtectionBlockEvent;
-import dev.tom.cannoncore.magicsand.SandManager;
+import dev.tom.cannoncore.magicsand.MagicsandType;
+import dev.tom.cannoncore.magicsand.MagicsandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,7 +29,6 @@ public final class CannonCore extends JavaPlugin {
     @Getter
     public static CannonCore core;
 
-    public static CannonItemManager cannonItemManager;
 
     @Getter
     public static PlotAPI plotAPI;
@@ -46,15 +45,13 @@ public final class CannonCore extends JavaPlugin {
         PlotSquaredHook();
         SakuraHook();
         configs();
-        new SandManager(this);
+        MagicsandType.initializeMagicsandTypes();
+        new MagicsandManager(this);
         new CannonCoreCommands();
         new Block36Events(this);
         new ProtectionBlockEvent(this);
         new BoneEvent(this);
 
-
-        cannonItemManager = new CannonItemManager(this);
-        cannonItemManager.registerCannonItems();
     }
 
     private void PlotSquaredHook(){

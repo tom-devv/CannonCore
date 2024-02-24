@@ -1,10 +1,6 @@
 package dev.tom.cannoncore.listeners;
 
 import dev.tom.cannoncore.CannonCore;
-import dev.tom.cannoncore.items.Block36;
-import dev.tom.cannoncore.items.CannonItemManager;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -25,14 +21,14 @@ public class Block36Events implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e){
 
-        if(!e.getBlock().getType().equals(Material.PLAYER_HEAD) && !e.getBlock().getType().equals(Material.PLAYER_WALL_HEAD)) return; // Prevents any code being ran most of time
-        if(!Block36.isBlock36(e.getItemInHand())) return;
-
-        Block block = e.getBlock();
-        block.setType(Material.MOVING_PISTON);
-
-        Block36 block36Item = (Block36) CannonItemManager.getCannonItemMap().get("block36");
-        block36Item.createArmorStand(e.getBlock().getLocation().add(0.5, -1.2, 0.5)); // Move it down so the head is at 0.5 0.5
+//        if(!e.getBlock().getType().equals(Material.PLAYER_HEAD) && !e.getBlock().getType().equals(Material.PLAYER_WALL_HEAD)) return; // Prevents any code being ran most of time
+//        if(!Block36.isBlock36(e.getItemInHand())) return;
+//
+//        Block block = e.getBlock();
+//        block.setType(Material.MOVING_PISTON);
+//
+//        Block36 block36Item = (Block36) CannonItemManager.getCannonItemMap().get("block36");
+//        block36Item.createArmorStand(e.getBlock().getLocation().add(0.5, -1.2, 0.5)); // Move it down so the head is at 0.5 0.5
     }
 
     /**
@@ -42,11 +38,11 @@ public class Block36Events implements Listener {
      */
     @EventHandler
     public void onArmorClick (PlayerArmorStandManipulateEvent e){
-        if(!Block36.isBlock36(e.getArmorStandItem())) return;
-        e.setCancelled(true);
-        e.getRightClicked().getLocation().add(0, 1.2 ,0) // Add 1.2 because we -1.2 when placing armor strand
-                .getBlock().setType(Material.AIR);
-        e.getRightClicked().remove();
+//        if(!Block36.isBlock36(e.getArmorStandItem())) return;
+//        e.setCancelled(true);
+//        e.getRightClicked().getLocation().add(0, 1.2 ,0) // Add 1.2 because we -1.2 when placing armor strand
+//                .getBlock().setType(Material.AIR);
+//        e.getRightClicked().remove();
     }
 
 }

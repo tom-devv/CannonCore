@@ -2,72 +2,52 @@ package dev.tom.cannoncore.items;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import de.tr7zw.changeme.nbtapi.iface.ReadableItemNBT;
 
+import de.tr7zw.changeme.nbtapi.iface.ReadableItemNBT;
 import dev.tom.cannoncore.CannonCore;
-import dev.tom.cannoncore.objects.CannonPlayer;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
+@Getter
 public abstract class AbstractCannonItem {
 
-    private ItemStack cannonItemStack;
+    @Getter
+    private static Map<String, AbstractCannonItem> cannonItemMap = new HashMap<>();
+
+    @Setter
+    private ItemStack itemStack;
     private final String id;
 
 
-    public AbstractCannonItem(String id, ItemStack itemStack){
-        this.cannonItemStack = itemStack;
+    public AbstractCannonItem(String id){
         this.id = id;
-    }
-
-    public void applyNBT(ItemStack itemStack, String prefix){
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setString(CannonCore.NBT_IDENTIFIER + "_" + prefix, id);
-        this.cannonItemStack = nbtItem.getItem();
     }
 
     /**
      * Applies identifier NBT data so it can be identified later
      * @param itemStack NBT modified ItemStack
      */
-    public void applyNBT(ItemStack itemStack){
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setString(CannonCore.NBT_IDENTIFIER, id);
-        this.cannonItemStack = nbtItem.getItem();
+    public void applyNBT(String prefix){
+        NBTItem nbtItem = new NBTItem(getItemStack());
+        nbtItem.setString(CannonCore.NBT_IDENTIFIER + ":" + prefix, id);
+        this.itemStack = nbtItem.getItem();
     }
-    /**
-     * Applies identifier NBT data to this.itemStack so it can be identified later
-     */
-    public void applyNBT(){
-        applyNBT(this.cannonItemStack);
+
+    public static String getIdentifier(ItemStack itemStack, String prefix){
+        return NBT.get(itemStack, (Function<ReadableItemNBT, Object>) nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER + ":" + prefix)).toString();
     }
 
     public void giveItem(Player player){
-        player.getInventory().setItemInMainHand(getCannonItemStack());
+        player.getInventory().setItemInMainHand(getItemStack());
     }
+    abstract ItemStack createItemStack();
 
-    /**
-     * Checks if the item in hand has NBT matching @param type
-     * @param itemStack ItemStack to check
-     * @param type The type to check it against
-     * @return The type of cannon item that it is
-     */
-    private boolean resolveItem(ItemStack itemStack, String type){
-        String itemType = NBT.get(itemStack, (Function<ReadableItemNBT, String>) nbt -> nbt.getString(CannonCore.NBT_IDENTIFIER));
-        return itemType.equalsIgnoreCase(type);
-    }
 
-    public ItemStack getCannonItemStack() {
-        return cannonItemStack;
-    }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setCannonItemStack(ItemStack cannonItemStack) {
-        this.cannonItemStack = cannonItemStack;
-    }
 }

@@ -2,10 +2,7 @@ package dev.tom.cannoncore.commands.arguments;
 
 import dev.splityosis.commandsystem.SYSArgument;
 import dev.splityosis.commandsystem.SYSCommand;
-import dev.tom.cannoncore.magicsand.Magicsand;
-import dev.tom.cannoncore.magicsand.SandManager;
-import me.samsuik.sakura.physics.PhysicsVersion;
-import org.bukkit.Material;
+import dev.tom.cannoncore.magicsand.MagicsandType;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -16,7 +13,7 @@ public class MagicsandArgument extends SYSArgument {
 
     @Override
     public boolean isValid(String s) {
-        return SandManager.magicsands.containsKey(s.toLowerCase()) || s.equalsIgnoreCase("clear") || s.equalsIgnoreCase("refill") || s.isEmpty();
+        return MagicsandType.isMagicsandType(s) || s.equalsIgnoreCase("clear") || s.equalsIgnoreCase("refill");
     }
 
     @Override
@@ -27,9 +24,9 @@ public class MagicsandArgument extends SYSArgument {
     @Override
     public @NonNull List<String> tabComplete(CommandSender sender, SYSCommand command, String input) {
         List<String> matchingMagicsand = new ArrayList<>();
-        for (String id : SandManager.magicsands.keySet()) {
-            if(id.toUpperCase().contains(input.toUpperCase())){
-                matchingMagicsand.add(id);
+        for (MagicsandType value : MagicsandType.values()) {
+            if(value.name().toLowerCase().contains(input.toLowerCase())){
+                matchingMagicsand.add(value.name().toLowerCase());
             }
         }
         if(input.contains("clear") || input.contains("refill")){

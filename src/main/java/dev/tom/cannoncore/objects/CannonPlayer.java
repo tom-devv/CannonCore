@@ -6,8 +6,6 @@ import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
-import dev.tom.cannoncore.magicsand.ActiveMagicsand;
-import dev.tom.cannoncore.magicsand.SandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -66,7 +64,7 @@ public class CannonPlayer {
      */
 
     public List<Block> getNearbyBlocks(int radius) {
-        World world = getPlayer().getLocation().getWorld();
+        World world = this.getPlayer().getLocation().getWorld();
         List<Block> blocks = new ArrayList<>();
         if(world == null) return blocks;
 
