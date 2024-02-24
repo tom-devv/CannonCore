@@ -13,7 +13,7 @@ public class MagicsandArgument extends SYSArgument {
 
     @Override
     public boolean isValid(String s) {
-        return MagicsandType.isMagicsandType(s) || s.equalsIgnoreCase("clear") || s.equalsIgnoreCase("refill");
+        return MagicsandType.isMagicsandType(s) || s.equalsIgnoreCase("clear") || s.equalsIgnoreCase("refill") || s.equalsIgnoreCase("test");
     }
 
     @Override

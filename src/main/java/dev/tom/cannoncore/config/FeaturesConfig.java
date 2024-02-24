@@ -30,4 +30,8 @@ public class FeaturesConfig extends AnnotatedConfig {
     @ConfigField(path = "features.protection-blocks.types")
     public static List<String> materials = Arrays.asList("BEDROCK", "EMERALD");
 
+
+    @Getter
+    @ConfigField(path = "features.magicsand.max-per-plot")
+    public static int magicsandMaxPerPlot = 300;
 }

@@ -42,20 +42,6 @@ public class CannonPlayer {
         this.player.sendMessage(Util.colorize(message));
     }
 
-    public void getNearbyMagicsand(boolean activeSand){
-        List<Block> nearbyBlocks = getNearbyBlocks(FeaturesConfig.getMaxRadius());
-        Location location = Location.at(player.getLocation().getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-        Plot plot = location.getPlot();
-//        if(plot == null) return null;
-//        if(activeSand){
-//            List<ActiveMagicsand> activeMagicsands = new ArrayList<>();
-//            for (Block nearbyBlock : nearbyBlocks) {
-//                if(SandManager.plotMagicSand.containsKey(nearbyBlock.getLocation())){
-//                    activeMagicsands.add(SandManager.plotMagicSand.get(nearbyBlock.getLocation()));
-//                }
-//            }
-//        }
-    }
 
     /**
      *

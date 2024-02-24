@@ -1,5 +1,6 @@
 package dev.tom.cannoncore.magicsand;
 
+import com.plotsquared.core.configuration.caption.StaticCaption;
 import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.config.FeaturesConfig;
@@ -24,7 +25,7 @@ public class MagicsandManager implements Listener {
     @Getter
     public static Set<Material> magicsandSpawnBlocks = new HashSet<>();
     public static Set<Material> magicsandInactiveBlocks = new HashSet<>();
-    public static Map<Plot, HashMap<Location, Magicsand>> plotsMagicSand = new HashMap<>();
+    public static Map<Plot, HashMap<Location, Magicsand>> activePlotMagicSands = new HashMap<>();
 
     public MagicsandManager(CannonCore plugin){
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -45,7 +46,7 @@ public class MagicsandManager implements Listener {
     @EventHandler
     public void onMagicsandBreak(BlockBreakEvent e){
         Location location = e.getBlock().getLocation();
-        removeMagicsand(location); // Tries every block and determines if its magicsand in func
+        deactivateMagicsand(location); // Tries every block and determines if its magicsand in func
     }
 
 
@@ -55,13 +56,29 @@ public class MagicsandManager implements Listener {
      * @param location the location of the magicsand
      * @param magicsand the magicsand placed
      */
-    public static void addMagicsand(Plot plot, Location location, Magicsand magicsand){
-        HashMap<Location, Magicsand> plotMagicSand = plotsMagicSand.get(plot);
+    public static Magicsand activateBlockAsMagicsand(Plot plot, Location location){
+        HashMap<Location, Magicsand> plotMagicSand = activePlotMagicSands.get(plot);
         if(plotMagicSand == null){
             plotMagicSand = new HashMap<>();
         }
+
+        // Failsafe for too many magicsand
+        if(plotMagicSand.size() > FeaturesConfig.getMagicsandMaxPerPlot()){
+            plot.getPlayersInPlot().forEach(player -> player.sendMessage(StaticCaption.of("This plot has reached the maximum amount of magicsand")));
+            return null;
+        }
+
+        MagicsandType type = MagicsandType.getByInactiveBlock(location.getBlock().getType());
+        if(type == null && location.getBlock().getType().equals(MagicsandType.getActiveBlock())){
+            type = MagicsandType.SAND;
+        } else if (type == null){
+            return null;
+        }
+        Magicsand magicsand = new Magicsand(type, location);
         plotMagicSand.put(location, magicsand);
-        plotsMagicSand.put(plot, plotMagicSand);
+
+        activePlotMagicSands.put(plot, plotMagicSand);
+        return magicsand;
     }
 
     /**
@@ -69,19 +86,19 @@ public class MagicsandManager implements Listener {
      * @param location the location of the block that was broken
      * @return true if the magicsand was removed, false if it was not found
      */
-    public static void removeMagicsand(Location location){
+    public static void deactivateMagicsand(Location location){
         com.plotsquared.core.location.Location plotLocation = com.plotsquared.core.location.Location.at(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         Plot plot = plotLocation.getPlot();
         if(plot == null) return; // Not in a plot
 
-        HashMap<Location, Magicsand> plotMagicSand = plotsMagicSand.get(plot);
+        HashMap<Location, Magicsand> plotMagicSand = activePlotMagicSands.get(plot);
         if(plotMagicSand == null) return;
         Magicsand magicsand = plotMagicSand.get(location);
         if(magicsand == null) return; // Not a magicsand block as was not in map
 
         magicsand.stop(); // stop magicsand checking, spawning columns
         plotMagicSand.remove(location); // remove from list of magicsand -> garbage collection
-        plotsMagicSand.put(plot, plotMagicSand);
+        activePlotMagicSands.put(plot, plotMagicSand);
         clearSandBelow(location.getBlock());
     }
 
@@ -95,16 +112,9 @@ public class MagicsandManager implements Listener {
             return;
         }
         for (Block block : blocks) {
-            if(MagicsandManager.magicsandInactiveBlocks.contains(block.getType())){
-                MagicsandType magicsandType = MagicsandType.getByInactiveBlock(block.getType());
-                if(magicsandType == null) continue;
-                new Magicsand(magicsandType, block.getLocation()).run();
-            }
-            // Block was active but is now just activeBlock not spawning, weird edge case
-            else if(block.getType().equals(MagicsandType.getActiveBlock())){
-                // We can't know the type because all activeBlocks are the same
-                // lets hope it was sand!
-                new Magicsand(MagicsandType.SAND, block.getLocation()).run();
+            // If block is inactive type or active type
+            if(MagicsandManager.magicsandInactiveBlocks.contains(block.getType()) || block.getType().equals(MagicsandType.getActiveBlock()) ){
+                activateBlockAsMagicsand(player.getCurrentPlot(), block.getLocation());
             }
         }
     }
@@ -127,12 +137,12 @@ public class MagicsandManager implements Listener {
             return;
         }
         Plot plot = player.getCurrentPlot();
-        HashMap<Location, Magicsand> plotMagicSand = plotsMagicSand.get(plot);
+        HashMap<Location, Magicsand> plotMagicSand = activePlotMagicSands.get(plot);
         if(plotMagicSand == null) return;
         for (Block block : blocks) {
             Location location = block.getLocation();
             if(plotMagicSand.get(location) == null) continue;
-            removeMagicsand(location);
+            deactivateMagicsand(location);
         }
     }
 

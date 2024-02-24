@@ -3,11 +3,14 @@ package dev.tom.cannoncore.magicsand;
 
 import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.HashMap;
 
 @Getter
 public class Magicsand {
@@ -37,8 +40,13 @@ public class Magicsand {
         if (plot == null) {
             return;
         }
+        // Failsafe for too many magicsand
+        HashMap<Location, Magicsand> plotMagicsand = MagicsandManager.activePlotMagicSands.get(plot);
+        if (plotMagicsand.size() > FeaturesConfig.magicsandMaxPerPlot) {
+            return;
+        }
         getLocation().getBlock().setType(MagicsandType.getActiveBlock());
-        MagicsandManager.addMagicsand(plot, location, this); // It's running so add it to the map
+        MagicsandManager.activateBlockAsMagicsand(plot, location, this); // It's running so add it to the map
         spawnTask = new BukkitRunnable(){
             @Override
             public void run() {
