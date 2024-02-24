@@ -46,7 +46,7 @@ public class Magicsand {
             return;
         }
         getLocation().getBlock().setType(MagicsandType.getActiveBlock());
-        MagicsandManager.activateBlockAsMagicsand(plot, location, this); // It's running so add it to the map
+        MagicsandManager.activateBlockAsMagicsand(plot, location); // It's running so add it to the map
         spawnTask = new BukkitRunnable(){
             @Override
             public void run() {
