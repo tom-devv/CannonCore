@@ -22,23 +22,19 @@ import java.util.stream.Collectors;
 @Getter
 public class CannonPlayer {
 
-    private Player player = null;
-    private PlotPlayer<Player> plotPlayer;
-    private UUID uuid = null;
     public static Map<UUID, CannonPlayer> cannonPlayerMap = new HashMap<>();
 
+    private final Player player;
+    private final PlotPlayer<Player> plotPlayer;
+    private final UUID uuid;
+
     public CannonPlayer(Player player){
-        System.out.println("Creating new cannon player for: " + player.getName());
         this.player = player;
         this.uuid = player.getUniqueId();
         this.plotPlayer = PlotPlayer.from(player);
         cannonPlayerMap.put(this.uuid, this);
-        System.out.println("This players name:" + this.player.getName());
     }
 
-    public CannonPlayer(UUID uuid){
-        new CannonPlayer(Objects.requireNonNull(Bukkit.getPlayer(uuid)));
-    }
 
     public void sendMessage(String... message){
         this.player.sendMessage(Util.colorize(message));
@@ -115,13 +111,9 @@ public class CannonPlayer {
         }
     }
 
-    public static CannonPlayer getCannonPlayer(UUID uuid){
-        if(cannonPlayerMap.containsKey(uuid)) return cannonPlayerMap.get(uuid);
-        return new CannonPlayer(uuid);
-    }
 
     public static CannonPlayer getCannonPlayer(Player player){
-        return getCannonPlayer(player.getUniqueId());
+        return new CannonPlayer(player);
     }
 
 

@@ -1,6 +1,7 @@
 package dev.tom.cannoncore.listeners;
 
 import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ public class BoneEvent implements Listener {
                         BlockBreakEvent bbe = new BlockBreakEvent(newBlock, player);
                         Bukkit.getServer().getPluginManager().callEvent(bbe);
                         if (!bbe.isCancelled()) {
-                            newBlock.setType(Material.AIR);
+                            Util.setBlock(newBlock, Material.AIR);
                             removedCount++;
                         }
                     }

@@ -22,6 +22,12 @@ public class Magicsand {
     private BukkitTask spawnTask;
     private int counter = 0;
 
+    /**
+     * Creates a new instance of a magicsand
+     * when initialized it will run the magicsand
+     * @param type the type of magicsand
+     * @param location the location of the magicsand
+     */
     public Magicsand(MagicsandType type, org.bukkit.Location location){
         this.type = type;
         this.location = location;
@@ -34,20 +40,19 @@ public class Magicsand {
         if(spawnTask != null){
             spawnTask.cancel();
         }
-        MagicsandManager.deactivateMagicsand(getLocation());
     }
 
     public void run() {
         if (plot == null) {
             return;
         }
-        // Failsafe for too many magicsand
+        // Failsafe for too many magicsand - should never be called
         HashMap<Location, Magicsand> plotMagicsand = MagicsandManager.activePlotMagicSands.get(plot);
-        if (plotMagicsand.size() > FeaturesConfig.magicsandMaxPerPlot) {
+        if (plotMagicsand != null && plotMagicsand.size() > FeaturesConfig.magicsandMaxPerPlot) {
             return;
         }
-        getLocation().getBlock().setType(MagicsandType.getActiveBlock());
-        MagicsandManager.activateBlockAsMagicsand(plot, location); // It's running so add it to the map
+
+        getLocation().getBlock().setType(MagicsandType.getActiveBlock(), false);
         spawnTask = new BukkitRunnable(){
             @Override
             public void run() {
@@ -78,7 +83,7 @@ public class Magicsand {
                 underClone.getBlock().setType(getType().getSpawnBlock(), false);
                 counter++;
             }
-        }.runTaskTimer(CannonCore.getCore(), 0, 1);
+        }.runTaskTimer(CannonCore.getCore(), 3, 1);
         counter = 0;
     }
 

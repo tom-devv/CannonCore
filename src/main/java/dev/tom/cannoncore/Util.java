@@ -1,14 +1,27 @@
 package dev.tom.cannoncore;
 
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.AbstractWorld;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class Util {
@@ -69,6 +82,23 @@ public class Util {
         for (String message : messageList)
             if (!message.isEmpty())
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    public static void setBlock(Block block, Material material){
+        setBlock(block.getLocation(), material);
+    }
+
+    public static void setBlock(Location location, Material material){
+        try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(location.getWorld()))) {
+            session.setBlock(BukkitAdapter.asBlockVector(location), BlockTypes.get(material.name().toLowerCase()));
+        };
+    }
+
+    public static void setBlocks(Set<Block> blocks, Material material, Location location){
+        try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(location.getWorld()))) {
+            Set<BlockVector3> blockVector3s = blocks.stream().map((block) -> BukkitAdapter.asBlockVector(block.getLocation())).collect(Collectors.toSet());
+            session.setBlocks(blockVector3s, BlockTypes.get(material.name().toLowerCase()));
+        };
     }
 
 }
