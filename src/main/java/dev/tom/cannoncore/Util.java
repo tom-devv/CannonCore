@@ -3,21 +3,12 @@ package dev.tom.cannoncore;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extension.factory.parser.pattern.SingleBlockPatternParser;
-import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.function.mask.BlockTypeMask;
 import com.sk89q.worldedit.function.mask.Mask;
-import com.sk89q.worldedit.function.pattern.Pattern;
-import com.sk89q.worldedit.function.pattern.TypeApplyingPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.world.AbstractWorld;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockStateHolder;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.block.*;
 import dev.tom.cannoncore.magicsand.MagicsandManager;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
@@ -37,7 +28,7 @@ import java.util.stream.Collectors;
 public class Util {
 
     private static final java.util.regex.Pattern HEX_PATTERN = java.util.regex.Pattern.compile("&(#\\w{6})");
-
+    public static final Set<BlockType> magicsandBlockTypes = MagicsandManager.magicsandSpawnBlocks.stream().map((material) -> BlockTypes.get(material.name().toLowerCase())).collect(Collectors.toSet());
 
     private static void sendMessage(CommandSender to, String message) {
         to.sendMessage(colorize(message));
@@ -112,14 +103,20 @@ public class Util {
     }
 
     public static void clearSandLike(Location start) {
-        // Define the region below it to y = -64
         Region region = new CuboidRegion(BukkitAdapter.adapt(start.getWorld()), BukkitAdapter.asBlockVector(start), BukkitAdapter.asBlockVector(start.clone().add(0, -64 - start.getBlockY(), 0)));
         replaceBlocks(region, MagicsandManager.magicsandSpawnBlocks, Material.AIR);
     }
 
-    public static void replaceBlocks(Region region, Set<Material> from, Material to){
+    public static void replaceBlocks(Region region, Set<Material> from, Material to) {
         try (EditSession session = WorldEdit.getInstance().newEditSession(region.getWorld())) {
             Mask mask = new BlockTypeMask(session, from.stream().map((material) -> BlockTypes.get(material.name().toLowerCase())).collect(Collectors.toSet()));
+            session.replaceBlocks(region, mask, BlockTypes.get(to.name().toLowerCase()));
+        };
+    }
+
+    public static void replaceBlockType(Region region, Set<BlockType> type, Material to){
+        try (EditSession session = WorldEdit.getInstance().newEditSession(region.getWorld())) {
+            Mask mask = new BlockTypeMask(session, type);
             session.replaceBlocks(region, mask, BlockTypes.get(to.name().toLowerCase()));
         };
     }

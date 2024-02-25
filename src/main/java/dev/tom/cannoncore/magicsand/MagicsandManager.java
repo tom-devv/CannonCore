@@ -44,6 +44,7 @@ public class MagicsandManager implements Listener {
         if(magicsand == null) {
             e.setCancelled(true);
         }
+        e.getBlock().setType(MagicsandType.getActiveBlock(), false);
         e.getPlayer().sendMessage("Magic sand placed!");
     }
 

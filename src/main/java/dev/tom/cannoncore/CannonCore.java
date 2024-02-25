@@ -1,26 +1,32 @@
 package dev.tom.cannoncore;
 
 import com.plotsquared.core.PlotAPI;
+import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.commands.CannonCoreCommands;
 import dev.tom.cannoncore.config.ChatMessages;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import dev.tom.cannoncore.listeners.Block36Events;
 import dev.tom.cannoncore.listeners.BoneEvent;
 import dev.tom.cannoncore.listeners.ProtectionBlockEvent;
+import dev.tom.cannoncore.magicsand.Magicsand;
 import dev.tom.cannoncore.magicsand.MagicsandType;
 import dev.tom.cannoncore.magicsand.MagicsandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class CannonCore extends JavaPlugin {
 
     public static String BASE_COMMAND_PERMISSION = "cannoncore.command.";
     public static String NBT_IDENTIFIER = "cannoncore";
 
+    @Getter
     public static Reflections reflection = new Reflections("dev.tom.cannoncore");
 
     @Getter
@@ -81,14 +87,13 @@ public final class CannonCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        MagicsandManager.activePlotMagicSands.forEach((plot, map) -> {
+        // Avoid concurrent modification exception as deactiveMagicsand modifies the map
+        Map<Plot, HashMap<Location, Magicsand>> clonedMap = new HashMap<>(MagicsandManager.activePlotMagicSands);
+        clonedMap.forEach((plot, map) -> {
             map.forEach((location, magicsand) -> {
                 MagicsandManager.deactivateMagicsand(location);
             });
         });
     }
 
-    public static Reflections getReflection() {
-        return reflection;
-    }
 }

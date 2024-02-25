@@ -2,7 +2,11 @@ package dev.tom.cannoncore.magicsand;
 
 
 import com.plotsquared.core.plot.Plot;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Getter;
 import org.bukkit.Location;
@@ -11,6 +15,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
+
+import static dev.tom.cannoncore.Util.replaceBlockType;
 
 @Getter
 public class Magicsand {
@@ -21,6 +27,7 @@ public class Magicsand {
     private final Plot plot;
     private BukkitTask spawnTask;
     private int counter = 0;
+    private final Region region;
 
     /**
      * Creates a new instance of a magicsand
@@ -33,6 +40,7 @@ public class Magicsand {
         this.location = location;
         this.plotLocation = com.plotsquared.core.location.Location.at(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         this.plot = plotLocation.getPlot();
+        this.region = new CuboidRegion(BukkitAdapter.adapt(location.getWorld()), BukkitAdapter.asBlockVector(location), BukkitAdapter.asBlockVector(location.clone().add(0, -64 - location.getBlockY(), 0)));
         run();
     }
 
@@ -40,6 +48,11 @@ public class Magicsand {
         if(spawnTask != null){
             spawnTask.cancel();
         }
+        clearBelow();
+    }
+
+    public void clearBelow(){
+        replaceBlockType(getRegion(), Util.magicsandBlockTypes, Material.AIR);
     }
 
     public void run() {
