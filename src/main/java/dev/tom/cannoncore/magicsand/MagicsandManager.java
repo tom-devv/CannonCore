@@ -46,7 +46,9 @@ public class MagicsandManager implements Listener {
     @EventHandler
     public void onMagicsandBreak(BlockBreakEvent e){
         Location location = e.getBlock().getLocation();
-        deactivateMagicsand(location); // Tries every block and determines if its magicsand in func
+        Magicsand magicsand = getMagicsandAtLocation(location);
+        if(magicsand == null) return;
+        magicsand.deactivate();
     }
 
 
@@ -96,9 +98,9 @@ public class MagicsandManager implements Listener {
         Magicsand magicsand = plotMagicSand.get(location);
         if(magicsand == null) return; // Not a magicsand block as was not in map
 
-        magicsand.stop(); // stop magicsand checking, spawning columns
         plotMagicSand.remove(location); // remove from list of magicsand -> garbage collection
         activePlotMagicSands.put(plot, plotMagicSand);
+        location.getBlock().setType(magicsand.getType().getInactiveBlock());
         clearSandBelow(location.getBlock());
     }
 
@@ -152,6 +154,14 @@ public class MagicsandManager implements Listener {
      */
     public static void clearMagicsand(Player player){
         clearMagicsand(CannonPlayer.getCannonPlayer(player));
+    }
+
+    public static Magicsand getMagicsandAtLocation(Location location){
+        Plot plot = com.plotsquared.core.location.Location.at(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()).getPlot();
+        if(plot == null) return null;
+        HashMap<Location, Magicsand> plotMagicSand = activePlotMagicSands.get(plot);
+        if(plotMagicSand == null) return null;
+        return plotMagicSand.get(location);
     }
 
     private static void clearSandBelow(Block block){

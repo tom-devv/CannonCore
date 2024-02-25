@@ -81,7 +81,11 @@ public final class CannonCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        MagicsandManager.activePlotMagicSands.forEach((plot, map) -> {
+            map.forEach((location, magicsand) -> {
+                magicsand.deactivate();
+            });
+        });
     }
 
     public static Reflections getReflection() {

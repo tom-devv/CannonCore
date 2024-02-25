@@ -27,13 +27,14 @@ public class Magicsand {
         this.location = location;
         this.plotLocation = com.plotsquared.core.location.Location.at(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         this.plot = plotLocation.getPlot();
+        run();
     }
 
-    public void stop(){
+    public void deactivate(){
         if(spawnTask != null){
             spawnTask.cancel();
         }
-        getLocation().getBlock().setType(getType().getInactiveBlock());
+        MagicsandManager.deactivateMagicsand(getLocation());
     }
 
     public void run() {

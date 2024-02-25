@@ -28,10 +28,12 @@ public class CannonPlayer {
     public static Map<UUID, CannonPlayer> cannonPlayerMap = new HashMap<>();
 
     public CannonPlayer(Player player){
+        System.out.println("Creating new cannon player for: " + player.getName());
         this.player = player;
         this.uuid = player.getUniqueId();
         this.plotPlayer = PlotPlayer.from(player);
         cannonPlayerMap.put(this.uuid, this);
+        System.out.println("This players name:" + this.player.getName());
     }
 
     public CannonPlayer(UUID uuid){
