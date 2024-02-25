@@ -3,6 +3,7 @@ package dev.tom.cannoncore.magicsand;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import dev.tom.cannoncore.items.MagicsandItem;
 import dev.tom.cannoncore.objects.CannonPlayer;
@@ -98,20 +99,19 @@ public class MagicsandManager implements Listener {
      * @param location the location of the block that was broken
      * @return true if the magicsand was removed, false if it was not found
      */
-    public static void deactivateMagicsand(Location location){
+    public static Magicsand deactivateMagicsand(Location location){
         com.plotsquared.core.location.Location plotLocation = com.plotsquared.core.location.Location.at(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         Plot plot = plotLocation.getPlot();
-        if(plot == null) return; // Not in a plot
+        if(plot == null) return null; // Not in a plot
 
         HashMap<Location, Magicsand> plotMagicSand = activePlotMagicSands.get(plot);
-        if(plotMagicSand == null) return;
+        if(plotMagicSand == null) return null;
         Magicsand magicsand = plotMagicSand.get(location);
-        if(magicsand == null) return; // Not a magicsand block as was not in map
+        if(magicsand == null) return null; // Not a magicsand block as was not in map
         magicsand.deactivate();
         plotMagicSand.remove(location); // remove from list of magicsand -> garbage collection
         activePlotMagicSands.put(plot, plotMagicSand);
-        location.getBlock().setType(magicsand.getType().getInactiveBlock(), false);
-        clearSandBelow(location.getBlock());
+        return magicsand;
     }
 
     /**
@@ -120,6 +120,7 @@ public class MagicsandManager implements Listener {
      */
     public static void refillMagicsand(CannonPlayer player){
         List<Block> blocks = player.getNearbyBlocks(FeaturesConfig.getMaxRadius());
+        Set<Block> magicsandBlocks = new HashSet<>();
         if(blocks.isEmpty()){
             return;
         }
@@ -130,11 +131,14 @@ public class MagicsandManager implements Listener {
             // This is a strange edge-case where the active block is placed but is not spawning
             boolean isActiveBlockButNotActive = block.getType().equals(MagicsandType.getActiveBlock()) && !activePlotMagicSands.get(player.getCurrentPlot()).containsKey(block.getLocation());
             if(isInactiveType || isActiveBlockButNotActive){
-                if(activateBlockAsMagicsand(player.getCurrentPlot(), block.getLocation()) == null) {
+                Magicsand magicsand = activateBlockAsMagicsand(player.getCurrentPlot(), block.getLocation());
+                if(magicsand == null) {
                     break;
-                };
+                }
+                magicsandBlocks.add(block);
             }
         }
+        Util.setBlocks(magicsandBlocks, MagicsandType.getActiveBlock(), blocks.get(0).getLocation());
     }
 
     /**
@@ -151,6 +155,7 @@ public class MagicsandManager implements Listener {
      */
     public static void clearMagicsand(CannonPlayer player){
         List<Block> blocks = player.getNearbyBlocks(FeaturesConfig.getMaxRadius());
+        Map<MagicsandType, Set<Block>> magicsandBlocks = new HashMap<>();
         if(blocks.isEmpty()){
             return;
         }
@@ -160,8 +165,17 @@ public class MagicsandManager implements Listener {
         for (Block block : blocks) {
             Location location = block.getLocation();
             if(plotMagicSand.get(location) == null) continue;
-            deactivateMagicsand(location);
+            Magicsand magicsand = deactivateMagicsand(location);
+            if(magicsand == null) continue;
+            Set<Block> sandBlocks = magicsandBlocks.get(magicsand.getType()) == null ? new HashSet<>() : magicsandBlocks.get(magicsand.getType());
+            sandBlocks.add(block);
+            magicsandBlocks.put(magicsand.getType(), sandBlocks);
         }
+
+        magicsandBlocks.forEach((magicsandType, locations) -> {
+            Util.setBlocks(locations, magicsandType.getInactiveBlock(), blocks.get(0).getLocation());
+        });
+
     }
 
     /**
@@ -180,14 +194,4 @@ public class MagicsandManager implements Listener {
         return plotMagicSand.get(location);
     }
 
-    private static void clearSandBelow(Block block){
-        for (int y = block.getY() - 64; y < 320; y++) {
-            Location newLoc = new Location(block.getWorld(), block.getX(), y, block.getZ());
-            Block newBlock = newLoc.getBlock();
-            Material blockType = newBlock.getType();
-            if (magicsandSpawnBlocks.contains(blockType)) {
-                newBlock.setType(Material.AIR, false);
-            }
-        }
-    }
 }

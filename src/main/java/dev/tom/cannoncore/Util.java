@@ -3,11 +3,22 @@ package dev.tom.cannoncore;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extension.factory.parser.pattern.SingleBlockPatternParser;
 import com.sk89q.worldedit.extension.platform.Actor;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.TypeApplyingPattern;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.AbstractWorld;
 import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockStateHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import dev.tom.cannoncore.magicsand.MagicsandManager;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,13 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @UtilityClass
 public class Util {
 
-    private static final Pattern HEX_PATTERN = Pattern.compile("&(#\\w{6})");
+    private static final java.util.regex.Pattern HEX_PATTERN = java.util.regex.Pattern.compile("&(#\\w{6})");
 
 
     private static void sendMessage(CommandSender to, String message) {
@@ -98,6 +108,19 @@ public class Util {
         try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(location.getWorld()))) {
             Set<BlockVector3> blockVector3s = blocks.stream().map((block) -> BukkitAdapter.asBlockVector(block.getLocation())).collect(Collectors.toSet());
             session.setBlocks(blockVector3s, BlockTypes.get(material.name().toLowerCase()));
+        };
+    }
+
+    public static void clearSandLike(Location start) {
+        // Define the region below it to y = -64
+        Region region = new CuboidRegion(BukkitAdapter.adapt(start.getWorld()), BukkitAdapter.asBlockVector(start), BukkitAdapter.asBlockVector(start.clone().add(0, -64 - start.getBlockY(), 0)));
+        replaceBlocks(region, MagicsandManager.magicsandSpawnBlocks, Material.AIR);
+    }
+
+    public static void replaceBlocks(Region region, Set<Material> from, Material to){
+        try (EditSession session = WorldEdit.getInstance().newEditSession(region.getWorld())) {
+            Mask mask = new BlockTypeMask(session, from.stream().map((material) -> BlockTypes.get(material.name().toLowerCase())).collect(Collectors.toSet()));
+            session.replaceBlocks(region, mask, BlockTypes.get(to.name().toLowerCase()));
         };
     }
 

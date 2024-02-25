@@ -2,6 +2,8 @@ package dev.tom.cannoncore.listeners;
 
 import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.Util;
+import dev.tom.cannoncore.magicsand.Magicsand;
+import dev.tom.cannoncore.magicsand.MagicsandManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,24 +24,16 @@ public class BoneEvent implements Listener {
         Material item = event.getPlayer().getInventory().getItemInMainHand().getType();
         if (item.equals(Material.BONE)) {
             Player player = event.getPlayer();
-            Block block = getTargetBlock(player, 500);
+            Block block = getTargetBlock(player, 200);
             if (block != null) {
                 int removedCount = 0;
-
-                for (int y = block.getY() - 64; y < 320; y++) {
-                    Location newLoc = new Location(block.getWorld(), block.getX(), y, block.getZ());
-                    Block newBlock = newLoc.getBlock();
-                    Material blockType = newBlock.getType();
-                    if (blockType == Material.SAND || blockType == Material.GRAVEL || blockType == Material.RED_SAND) {
-                        BlockBreakEvent bbe = new BlockBreakEvent(newBlock, player);
-                        Bukkit.getServer().getPluginManager().callEvent(bbe);
-                        if (!bbe.isCancelled()) {
-                            Util.setBlock(newBlock, Material.AIR);
-                            removedCount++;
-                        }
-                    }
+                Location loc = block.getLocation().clone();
+                for (int i = 0; i < 384; i++) {
+                    Block iterBlock = loc.add(0,1,0).getBlock();
+                    if(MagicsandManager.magicsandSpawnBlocks.contains(iterBlock.getType())) continue;
+                    Util.clearSandLike(iterBlock.getLocation());
+                    break;
                 }
-
                 if (removedCount > 0) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "§c§lCannoning§f§lMC §8» §fRemoved " + removedCount + " Blocks"));
                 }
@@ -53,8 +47,7 @@ public class BoneEvent implements Listener {
         while (distance <= range) {
             loc = loc.add(loc.getDirection());
             Block block = loc.getBlock();
-            Material blockType = block.getType();
-            if (blockType == Material.SAND || blockType == Material.GRAVEL || blockType == Material.RED_SAND) {
+            if (MagicsandManager.magicsandSpawnBlocks.contains(block.getType())) {
                 return block;
             }
             distance++;

@@ -51,8 +51,6 @@ public class Magicsand {
         if (plotMagicsand != null && plotMagicsand.size() > FeaturesConfig.magicsandMaxPerPlot) {
             return;
         }
-
-        getLocation().getBlock().setType(MagicsandType.getActiveBlock(), false);
         spawnTask = new BukkitRunnable(){
             @Override
             public void run() {
