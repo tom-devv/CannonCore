@@ -38,7 +38,7 @@ public class ProtectionBlockEvent implements Listener {
                 protectedPairs.clear();
                 protectedTriplets.clear();
             }
-        }.runTaskTimer(plugin, 0, 0);
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     private Set<Integer> protectedPairs = new HashSet<>();
@@ -61,7 +61,7 @@ public class ProtectionBlockEvent implements Listener {
                 e.blockList().remove(block);
                 continue;
             }
-            for (int y = -64-block.getY(); y < 321-block.getY(); y++) {
+            for (int y = -63-block.getY(); y < 321-block.getY(); y++) {
                 Block iBlock = block.getRelative(0, y, 0);
                 if (FeaturesConfig.materials.contains(iBlock.getType().name())){
                     protectedPairs.add(pairHash);

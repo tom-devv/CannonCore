@@ -2,9 +2,13 @@ package dev.tom.cannoncore.magicsand;
 
 
 import com.plotsquared.core.plot.Plot;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
@@ -13,6 +17,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.BlockVector;
 
 import java.util.HashMap;
 
@@ -23,6 +28,7 @@ public class Magicsand {
 
     private final MagicsandType type;
     private final Location location;
+    private final BlockVector3 blockVector3;
     private final com.plotsquared.core.location.Location plotLocation;
     private final Plot plot;
     private BukkitTask spawnTask;
@@ -41,6 +47,7 @@ public class Magicsand {
         this.plotLocation = com.plotsquared.core.location.Location.at(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
         this.plot = plotLocation.getPlot();
         this.region = new CuboidRegion(BukkitAdapter.adapt(location.getWorld()), BukkitAdapter.asBlockVector(location), BukkitAdapter.asBlockVector(location.clone().add(0, -64 - location.getBlockY(), 0)));
+        this.blockVector3 = BukkitAdapter.asBlockVector(location);
         run();
     }
 
@@ -48,11 +55,6 @@ public class Magicsand {
         if(spawnTask != null){
             spawnTask.cancel();
         }
-        clearBelow();
-    }
-
-    public void clearBelow(){
-        replaceBlockType(getRegion(), Util.magicsandBlockTypes, Material.AIR);
     }
 
     public void run() {
@@ -69,7 +71,6 @@ public class Magicsand {
             public void run() {
                 Location under = location.clone().subtract(0,1,0);
                 if(under.getBlock().getType().equals(getType().getSpawnBlock())) return;
-                under.getBlock().setType(getType().getSpawnBlock(), false);
                 spawnColumn();
             }
 
@@ -81,21 +82,22 @@ public class Magicsand {
     }
 
     private void spawnColumn(){
-        counter = 0;
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                Location underClone = getLocation().clone().subtract(0,2,0); // Block under the magicsand has already been set to spawnBlock
-                underClone.subtract(0, counter ,0);
-                if(underClone.getBlockY() <= -64 || !underClone.getBlock().getType().equals(Material.AIR) || spawnTask.isCancelled()) {
-                    this.cancel();
-                    return;
+        counter = 1;
+            new BukkitRunnable(){
+                @Override
+                public void run() {
+                    Location underClone = getLocation().clone();
+                    underClone.subtract(0, counter ,0);
+                    if(underClone.getBlockY() <= -64 || !underClone.getBlock().getType().equals(Material.AIR) || spawnTask.isCancelled()) {
+                        this.cancel();
+                        return;
+                    }
+                    underClone.getBlock().setType(getType().getSpawnBlock(), false);
+                    counter++;
                 }
-                underClone.getBlock().setType(getType().getSpawnBlock(), false);
-                counter++;
-            }
-        }.runTaskTimer(CannonCore.getCore(), 3, 1);
-        counter = 0;
+            }.runTaskTimer(CannonCore.getCore(), 1, 1);
+
+        counter = 1;
     }
 
 

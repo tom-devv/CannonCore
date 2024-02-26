@@ -1,13 +1,19 @@
 package dev.tom.cannoncore.objects;
 
 
-import com.plotsquared.core.location.Location;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.internal.annotation.Selection;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
+import com.sk89q.worldedit.regions.EllipsoidRegion;
+import com.sk89q.worldedit.regions.selector.SphereRegionSelector;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -41,11 +47,14 @@ public class CannonPlayer {
     }
 
 
-    /**
-     *
-     * @param radius distance from the player to search
-     * @return List of blocks in a given radius
-     */
+    public EllipsoidRegion getSphereRegion(int radius) {
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(player.getWorld());
+        BlockVector3 center = BlockVector3.at(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+
+        // Create the sphere region
+        SphereRegionSelector selection = new SphereRegionSelector(world, center, radius);
+        return selection.getRegion();
+    }
 
     public List<Block> getNearbyBlocks(int radius) {
         World world = this.getPlayer().getLocation().getWorld();

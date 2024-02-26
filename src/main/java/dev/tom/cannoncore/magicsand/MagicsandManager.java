@@ -2,6 +2,17 @@ package dev.tom.cannoncore.magicsand;
 
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
+import com.sk89q.worldedit.function.mask.Mask;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.EllipsoidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.config.FeaturesConfig;
@@ -19,6 +30,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static dev.tom.cannoncore.Util.replaceBlockType;
 
 @Getter
 public class MagicsandManager implements Listener {
@@ -120,26 +134,24 @@ public class MagicsandManager implements Listener {
      * @param player player to check the radius of
      */
     public static void refillMagicsand(CannonPlayer player){
-        List<Block> blocks = player.getNearbyBlocks(FeaturesConfig.getMaxRadius());
-        Set<Block> magicsandBlocks = new HashSet<>();
-        if(blocks.isEmpty()){
-            return;
-        }
-        for (Block block : blocks) {
-            // If block is inactive type or active type
-            boolean isInactiveType = magicsandInactiveBlocks.contains(block.getType());
-
-            // This is a strange edge-case where the active block is placed but is not spawning
-            boolean isActiveBlockButNotActive = block.getType().equals(MagicsandType.getActiveBlock()) && !activePlotMagicSands.get(player.getCurrentPlot()).containsKey(block.getLocation());
-            if(isInactiveType || isActiveBlockButNotActive){
-                Magicsand magicsand = activateBlockAsMagicsand(player.getCurrentPlot(), block.getLocation());
-                if(magicsand == null) {
-                    break;
-                }
-                magicsandBlocks.add(block);
+        EllipsoidRegion region = player.getSphereRegion(FeaturesConfig.getMaxRadius());
+        World world = BukkitAdapter.adapt(player.getPlayer().getWorld());
+        Set<BlockVector3> activatedSandBlocks = new HashSet<>();
+        for (BlockVector3 blockVector3 : region) {
+            Material blockMaterial = BukkitAdapter.adapt(blockVector3.getBlock(world).getBlockType());
+            if(!magicsandInactiveBlocks.contains(blockMaterial)) continue;
+            Location location = new Location(player.getPlayer().getWorld(), blockVector3.getX(), blockVector3.getY(), blockVector3.getZ());
+            Magicsand magicsand = activateBlockAsMagicsand(player.getCurrentPlot(), location);
+            if(magicsand == null) { // Failed to create, full? Stop
+                break;
             }
+            activatedSandBlocks.add(blockVector3);
         }
-        Util.setBlocks(magicsandBlocks, MagicsandType.getActiveBlock(), blocks.get(0).getLocation());
+
+        BlockType type = BlockTypes.get(MagicsandType.getActiveBlock().name().toLowerCase());
+        try (EditSession session = WorldEdit.getInstance().newEditSession(world)) {
+            session.setBlocks(activatedSandBlocks, type);
+        };
     }
 
     /**
@@ -155,28 +167,30 @@ public class MagicsandManager implements Listener {
      * @param player player to check the radius of
      */
     public static void clearMagicsand(CannonPlayer player){
-        List<Block> blocks = player.getNearbyBlocks(FeaturesConfig.getMaxRadius());
-        Map<MagicsandType, Set<Block>> magicsandBlocks = new HashMap<>();
-        if(blocks.isEmpty()){
-            return;
-        }
-        Plot plot = player.getCurrentPlot();
-        HashMap<Location, Magicsand> plotMagicSand = activePlotMagicSands.get(plot);
-        if(plotMagicSand == null) return;
-        for (Block block : blocks) {
-            Location location = block.getLocation();
-            if(plotMagicSand.get(location) == null) continue;
+        EllipsoidRegion region = player.getSphereRegion(FeaturesConfig.getMaxRadius());
+        World world = BukkitAdapter.adapt(player.getPlayer().getWorld());
+        HashMap<Location, Magicsand> plotMagicsand = activePlotMagicSands.get(player.getCurrentPlot());
+        Map<MagicsandType, Set<Magicsand>> magicsandBlocks = new HashMap<>();
+        if(plotMagicsand == null) return;
+        for (BlockVector3 blockVector3 : region) {
+            Location location = new Location(player.getPlayer().getWorld(), blockVector3.getX(), blockVector3.getY(), blockVector3.getZ());
             Magicsand magicsand = deactivateMagicsand(location);
             if(magicsand == null) continue;
-            Set<Block> sandBlocks = magicsandBlocks.get(magicsand.getType()) == null ? new HashSet<>() : magicsandBlocks.get(magicsand.getType());
-            sandBlocks.add(block);
-            magicsandBlocks.put(magicsand.getType(), sandBlocks);
+            Set<Magicsand> sands = magicsandBlocks.get(magicsand.getType()) == null ? new HashSet<>() : magicsandBlocks.get(magicsand.getType());
+            sands.add(magicsand);
+            magicsandBlocks.put(magicsand.getType(), sands);
         }
 
-        magicsandBlocks.forEach((magicsandType, locations) -> {
-            Util.setBlocks(locations, magicsandType.getInactiveBlock(), blocks.get(0).getLocation());
-        });
-
+        try (EditSession session = WorldEdit.getInstance().newEditSession(world)) {
+            magicsandBlocks.forEach((magicsandType, magicsand) -> {
+                session.setBlocks(magicsand.stream().map(Magicsand::getBlockVector3).collect(Collectors.toSet()), BlockTypes.get(magicsandType.getInactiveBlock().name().toLowerCase()));
+                Mask mask = new BlockTypeMask(session, Util.magicsandBlockTypes);
+                Set<Region> regions = magicsand.stream().map(Magicsand::getRegion).collect(Collectors.toSet());
+                for (Region r : regions) {
+                    session.replaceBlocks(r, mask , BlockTypes.get(Material.AIR.name().toLowerCase()));
+                }
+            });
+        }
     }
 
     /**
