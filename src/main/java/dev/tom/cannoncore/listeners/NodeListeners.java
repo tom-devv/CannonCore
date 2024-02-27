@@ -35,8 +35,7 @@ public class NodeListeners implements Listener {
     )
     );
 
-    public static Map<UUID, List<Block>> selectedNodes = new HashMap<>();
-    public static Map<Block, Long> nodeActivations = new HashMap<>();
+
 
     public NodeListeners(){
         CannonCore.getCore().getServer().getPluginManager().registerEvents(this, CannonCore.getCore());
@@ -45,7 +44,7 @@ public class NodeListeners implements Listener {
 
     @EventHandler
     public void onDispense(BlockDispenseEvent e){
-        if(!nodeActivations.containsKey(e.getBlock())) return; // Dispenser is not being tracked
+        if(!RedstoneNodeUpdateEvent.nodeActivations.containsKey(e.getBlock())) return; // Dispenser is not being tracked
         RedstoneNodeUpdateEvent event = new RedstoneNodeUpdateEvent(e.getBlock(), CannonCore.getCurrentTick());
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
@@ -54,7 +53,7 @@ public class NodeListeners implements Listener {
     @EventHandler
     public void onBlockRedstone(BlockRedstoneEvent e){
         if(!redstoneNodes.contains(e.getBlock().getType())) return; // Type that we aren't tracking
-        if(!nodeActivations.containsKey(e.getBlock())) return; // Block is not being tracked
+        if(!RedstoneNodeUpdateEvent.nodeActivations.containsKey(e.getBlock())) return; // Block is not being tracked
         // Torches work in reverse, when we "activate" a torch it turns off
         if(e.getBlock().getType().equals(Material.REDSTONE_TORCH) || e.getBlock().getType().equals(Material.REDSTONE_WALL_TORCH)){
             if(e.getNewCurrent() != 0) return;
@@ -77,16 +76,16 @@ public class NodeListeners implements Listener {
         e.setCancelled(true);
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
-        List<Block> playersNodes = selectedNodes.get(player.getUniqueId()) == null ? new ArrayList<>() : selectedNodes.get(player.getUniqueId());
+        Map<Block, Integer> playersNodes = RedstoneNodeUpdateEvent.selectedNodes.get(player.getUniqueId()) == null ? new ArrayList<>() : RedstoneNodeUpdateEvent.selectedNodes.get(player.getUniqueId());
 
-        if(playersNodes.contains(block)){
+        if(playersNodes.containsKey(block)){
             // To maintain index positions set the element to null
-            playersNodes.set(playersNodes.indexOf(block), null);
+            playersNodes.put(block, -1);
         } else {
             playersNodes.add(block);
 
-            if(!nodeActivations.containsKey(block)){
-                nodeActivations.put(block, 0L);
+            if(!RedstoneNodeUpdateEvent.nodeActivations.containsKey(block)){
+                RedstoneNodeUpdateEvent.nodeActivations.put(block, 0L);
             }
 
             // [node number] Added @ [x, y, z]
