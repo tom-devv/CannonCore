@@ -7,6 +7,7 @@ import dev.tom.cannoncore.config.ChatMessages;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import dev.tom.cannoncore.listeners.Block36Events;
 import dev.tom.cannoncore.listeners.BoneEvent;
+import dev.tom.cannoncore.listeners.NodeListeners;
 import dev.tom.cannoncore.listeners.ProtectionBlockEvent;
 import dev.tom.cannoncore.magicsand.Magicsand;
 import dev.tom.cannoncore.magicsand.MagicsandType;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
 import java.io.File;
@@ -27,6 +29,9 @@ public final class CannonCore extends JavaPlugin {
     public static String NBT_IDENTIFIER = "cannoncore";
 
     @Getter
+    public static long currentTick = 0;
+
+    @Getter
     public static Reflections reflection = new Reflections("dev.tom.cannoncore");
 
     @Getter
@@ -34,7 +39,6 @@ public final class CannonCore extends JavaPlugin {
 
     @Getter
     public static CannonCore core;
-
 
     @Getter
     public static PlotAPI plotAPI;
@@ -48,6 +52,7 @@ public final class CannonCore extends JavaPlugin {
     @Override
     public void onEnable() {
         core = this;
+        tickRunner();
         PlotSquaredHook();
         SakuraHook();
         configs();
@@ -57,6 +62,18 @@ public final class CannonCore extends JavaPlugin {
         new Block36Events(this);
         new ProtectionBlockEvent(this);
         new BoneEvent(this);
+        new NodeListeners();
+
+    }
+
+    private void tickRunner(){
+
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                currentTick++;
+            }
+        }.runTaskTimer(this, 0, 1);
 
     }
 

@@ -21,7 +21,7 @@ public class MagicsandCommand extends CannonCoreCommand {
                 .executesPlayer((p, strings) -> {
 
                     CannonPlayer player = CannonPlayer.getCannonPlayer(p);
-                    if(strings[0].equalsIgnoreCase("test")){
+                    if(strings[0].equalsIgnoreCase("clearall")){
                         player.sendMessage(String.valueOf(MagicsandManager.activePlotMagicSands.get(player.getCurrentPlot()).size()));
                         return;
                     }

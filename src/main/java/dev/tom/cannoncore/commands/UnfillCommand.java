@@ -1,6 +1,8 @@
 package dev.tom.cannoncore.commands;
 
 import dev.splityosis.commandsystem.SYSCommand;
+import dev.splityosis.commandsystem.Util;
+import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.commands.conditions.PlotEditCondition;
 import dev.tom.cannoncore.objects.CannonPlayer;
 import org.bukkit.Material;
@@ -21,6 +23,7 @@ public class UnfillCommand extends CannonCoreCommand{
                         .executesPlayer((player, strings) -> {
                             CannonPlayer cannonPlayer = new CannonPlayer(player);
                             cannonPlayer.fillRadius(new ItemStack(Material.AIR, 1));
+                            Util.sendMessage(player, CannonCore.chatMessages.unfill);
                         });
 
     }

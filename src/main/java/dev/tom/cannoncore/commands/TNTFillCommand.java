@@ -1,6 +1,8 @@
 package dev.tom.cannoncore.commands;
 
 import dev.splityosis.commandsystem.SYSCommand;
+import dev.tom.cannoncore.CannonCore;
+import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.commands.conditions.PlotEditCondition;
 import dev.tom.cannoncore.config.FeaturesConfig;
 import dev.tom.cannoncore.objects.CannonPlayer;
@@ -30,7 +32,7 @@ public class TNTFillCommand extends CannonCoreCommand {
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = new CannonPlayer(player);
                     cannonPlayer.fillRadius(new ItemStack(Material.TNT, 64));
-                    player.sendMessage("&6Filled Dispensers with TNT");
+                    Util.sendMessage(player, CannonCore.chatMessages.tntfill);
         });
 
     }

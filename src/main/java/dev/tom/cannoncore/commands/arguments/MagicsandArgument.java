@@ -13,7 +13,7 @@ public class MagicsandArgument extends SYSArgument {
 
     @Override
     public boolean isValid(String s) {
-        return MagicsandType.isMagicsandType(s) || s.equalsIgnoreCase("clear") || s.equalsIgnoreCase("refill") || s.equalsIgnoreCase("test");
+        return MagicsandType.isMagicsandType(s) || s.equalsIgnoreCase("clear") || s.equalsIgnoreCase("refill") || s.equalsIgnoreCase("clearall");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MagicsandArgument extends SYSArgument {
                 matchingMagicsand.add(value.name().toLowerCase());
             }
         }
-        if(input.contains("clear") || input.contains("refill")){
+        if(input.contains("clear") || input.contains("refill") || input.contains("clearall")){
             matchingMagicsand.add(input);
         }
         return matchingMagicsand;
