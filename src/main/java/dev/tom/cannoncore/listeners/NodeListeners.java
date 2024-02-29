@@ -4,6 +4,8 @@ import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.events.RedstoneNodeUpdateEvent;
 import dev.tom.cannoncore.items.AbstractCannonItem;
+import dev.tom.cannoncore.objects.PlayerNodeSession;
+import dev.tom.cannoncore.objects.RedstoneNode;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.block.BlockPistonEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -44,56 +45,91 @@ public class NodeListeners implements Listener {
 
     @EventHandler
     public void onDispense(BlockDispenseEvent e){
-        if(!RedstoneNodeUpdateEvent.nodeActivations.containsKey(e.getBlock())) return; // Dispenser is not being tracked
-        RedstoneNodeUpdateEvent event = new RedstoneNodeUpdateEvent(e.getBlock(), CannonCore.getCurrentTick());
+        if(!RedstoneNode.trackedNodes.containsKey(e.getBlock())) return;
+        RedstoneNodeUpdateEvent event = new RedstoneNodeUpdateEvent(e.getBlock());
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
 
-    // Observers, redstone wire, redstone torch, redstone comparator, redstone repeater
+    //Observers, redstone wire, redstone torch, redstone comparator, redstone repeater
     @EventHandler
     public void onBlockRedstone(BlockRedstoneEvent e){
         if(!redstoneNodes.contains(e.getBlock().getType())) return; // Type that we aren't tracking
-        if(!RedstoneNodeUpdateEvent.nodeActivations.containsKey(e.getBlock())) return; // Block is not being tracked
+
         // Torches work in reverse, when we "activate" a torch it turns off
         if(e.getBlock().getType().equals(Material.REDSTONE_TORCH) || e.getBlock().getType().equals(Material.REDSTONE_WALL_TORCH)){
             if(e.getNewCurrent() != 0) return;
         }
+
         // For everything else we want to track when it turns on
-        else if(e.getOldCurrent() != 0 || e.getNewCurrent() <= 0) return;
-        RedstoneNodeUpdateEvent event = new RedstoneNodeUpdateEvent(e.getBlock(), CannonCore.getCurrentTick());
+        else if(e.getOldCurrent() != 0 ) return;
+        RedstoneNodeUpdateEvent event = new RedstoneNodeUpdateEvent(e.getBlock());
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
 
 
     @EventHandler
     public void onNodeSelect(PlayerInteractEvent e){
-        if(!e.getAction().equals(Action.LEFT_CLICK_BLOCK) || e.getClickedBlock() != null) return;
-        if(!redstoneNodes.contains(e.getClickedBlock().getType())) return;
         ItemStack itemMainHand = e.getPlayer().getInventory().getItemInMainHand();
-        if(AbstractCannonItem.getIdentifier(itemMainHand, "node") == null) return;
+        if(!AbstractCannonItem.getIdentifier(itemMainHand, "node").equalsIgnoreCase("nodestick")) return;
+
+        if(e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)){
+            PlayerNodeSession.nodeSessions.remove(e.getPlayer().getUniqueId());
+            Util.sendMessage(e.getPlayer(), "Cleared selected nodes");
+            return;
+        }
+
+        if(e.getClickedBlock() == null) return;
+        if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if(!redstoneNodes.contains(e.getClickedBlock().getType())) return;
 
         // Clicked correct block with node stick
         e.setCancelled(true);
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
-        Map<Block, Integer> playersNodes = RedstoneNodeUpdateEvent.selectedNodes.get(player.getUniqueId()) == null ? new ArrayList<>() : RedstoneNodeUpdateEvent.selectedNodes.get(player.getUniqueId());
 
-        if(playersNodes.containsKey(block)){
-            // To maintain index positions set the element to null
-            playersNodes.put(block, -1);
-        } else {
-            playersNodes.add(block);
-
-            if(!RedstoneNodeUpdateEvent.nodeActivations.containsKey(block)){
-                RedstoneNodeUpdateEvent.nodeActivations.put(block, 0L);
+        PlayerNodeSession session = PlayerNodeSession.nodeSessions.get(player.getUniqueId());
+        if(session == null){
+            session = new PlayerNodeSession();
+        }
+        Set<RedstoneNode> trackedNodes = RedstoneNode.trackedNodes.get(block);
+        if(trackedNodes == null) return;
+        boolean contained = false;
+        for (RedstoneNode trackedNode : trackedNodes) {
+            // Remove tracked node
+            if(trackedNode.getPlayerNodeSession().equals(session)){
+                contained = true;
+                trackedNodes.remove(trackedNode);
+                RedstoneNode.trackedNodes.put(block, trackedNodes);
+                player.sendMessage("Removed node: " + trackedNode.getSelectedNodeIndex());
             }
-
-            // [node number] Added @ [x, y, z]
-            Util.sendMessage(player, "Block selected ID:" + playersNodes + "at" + "X:" + e.getClickedBlock().getX() + " Y:" + e.getClickedBlock().getY() + " Z:" + e.getClickedBlock().getZ());
+        }
+        if(!contained) {
+            trackedNodes.add(new RedstoneNode(trackedNodes.size(), player.getUniqueId(), session));
+            RedstoneNode.trackedNodes.put(block, trackedNodes);
+            player.sendMessage("Added node: " + (trackedNodes.size() - 1));
         }
 
 
 
+//        RedstoneNodeList playersNodes = RedstoneNode.playerSelectedNodes.get(player.getUniqueId()) == null ? new RedstoneNodeList() : RedstoneNode.playerSelectedNodes.get(player.getUniqueId());
+//
+//        // Block is node in the player's selected nodes
+//        if(playersNodes.getByBlock(block) == null){
+//            playersNodes.add(new RedstoneNode(block)); // Add to player's tracked nodes
+//            RedstoneNode.playerSelectedNodes.put(player.getUniqueId(), playersNodes);
+//
+//            // Add to globally tracked nodes if not already
+//            if(!RedstoneNode.trackedNodeActivations.containsKey(block)){
+//                RedstoneNode.trackedNodeActivations.put(block, -1L);
+//            }
+//
+//            Util.sendMessage(player, "Block selected ID:" + (playersNodes.size() -1 ) + "at" + "X:" + e.getClickedBlock().getX() + " Y:" + e.getClickedBlock().getY() + " Z:" + e.getClickedBlock().getZ());
+//        }
+//        // Remove block from player's nodes
+//        else {
+//            playersNodes.remove(playersNodes.getByBlock(block));
+//            // Handle it not tracked by anyone -> remove from tracked blocks forever
+//        }
     }
 
 }

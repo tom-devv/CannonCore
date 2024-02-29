@@ -19,7 +19,7 @@ public class NodeCommand extends CannonCoreCommand {
         return
             new SYSCommand(getAliases())
                 .executesPlayer((player, strings) -> {
-                NodeStickItem nodeStickItem = (NodeStickItem) AbstractCannonItem.getCannonItemMap().get("Node stick");
+                NodeStickItem nodeStickItem = (NodeStickItem) AbstractCannonItem.getCannonItemMap().get("nodestick");
                   nodeStickItem.giveItem(player);
                   Util.sendMessage(player, CannonCore.chatMessages.nodereceive);
             });

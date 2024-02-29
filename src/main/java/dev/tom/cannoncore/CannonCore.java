@@ -5,6 +5,7 @@ import com.plotsquared.core.plot.Plot;
 import dev.tom.cannoncore.commands.CannonCoreCommands;
 import dev.tom.cannoncore.config.ChatMessages;
 import dev.tom.cannoncore.config.FeaturesConfig;
+import dev.tom.cannoncore.items.NodeStickItem;
 import dev.tom.cannoncore.listeners.Block36Events;
 import dev.tom.cannoncore.listeners.BoneEvent;
 import dev.tom.cannoncore.listeners.NodeListeners;
@@ -57,6 +58,7 @@ public final class CannonCore extends JavaPlugin {
         SakuraHook();
         configs();
         MagicsandType.initializeMagicsandTypes();
+        new NodeStickItem();
         new MagicsandManager(this);
         new CannonCoreCommands();
         new Block36Events(this);
