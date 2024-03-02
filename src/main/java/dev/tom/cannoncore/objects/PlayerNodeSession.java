@@ -22,7 +22,6 @@ public class PlayerNodeSession {
 
     public void onTick(RedstoneNode node){
         long diff = 0;
-        System.out.println("Diff = " + (CannonCore.getCurrentTick() - lastNodeActivationTick));
         if(CannonCore.getCurrentTick() - lastNodeActivationTick <= DECAY_TICKS){
             lastNodeActivationTick = CannonCore.getCurrentTick();
             diff = lastNodeActivationTick - initialTick;
