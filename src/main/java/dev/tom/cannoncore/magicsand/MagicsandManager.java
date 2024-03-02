@@ -63,11 +63,17 @@ public class MagicsandManager implements Listener {
     }
 
     @EventHandler
-    public void onMagicsandBreak(BlockBreakEvent e){
+    public void onMagicsandBreak(BlockBreakEvent e) {
         Location location = e.getBlock().getLocation();
         Magicsand magicsand = getMagicsandAtLocation(location);
-        if(magicsand == null) return;
+        if (magicsand == null) return;
         deactivateMagicsand(location);
+        try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(location.getWorld()))) {
+            session.setBlock(magicsand.getBlockVector3(), BlockTypes.get(magicsand.getType().getInactiveBlock().name().toLowerCase()));
+            Mask mask = new BlockTypeMask(session, Util.magicsandBlockTypes);
+            session.replaceBlocks(magicsand.getRegion(), mask, BlockTypes.get(Material.AIR.name().toLowerCase()));
+        }
+
     }
 
     public static Magicsand activateBlockAsMagicsand(Plot plot, Location location){
