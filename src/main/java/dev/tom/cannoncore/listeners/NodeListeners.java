@@ -70,6 +70,7 @@ public class NodeListeners implements Listener {
     @EventHandler
     public void onNodeSelect(PlayerInteractEvent e){
         ItemStack itemMainHand = e.getPlayer().getInventory().getItemInMainHand();
+        if(itemMainHand.getType().equals(Material.AIR)) return;
         if(!AbstractCannonItem.getIdentifier(itemMainHand, "node").equalsIgnoreCase("nodestick")) return;
 
         if(e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)){
