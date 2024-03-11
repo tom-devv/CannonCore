@@ -83,54 +83,37 @@ public class NodeListeners implements Listener {
         if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if(!redstoneNodes.contains(e.getClickedBlock().getType())) return;
 
-        // Clicked correct block with node stick
+
         e.setCancelled(true);
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
+
 
         PlayerNodeSession session = PlayerNodeSession.nodeSessions.get(player.getUniqueId());
         if(session == null){
             session = new PlayerNodeSession();
         }
-        Set<RedstoneNode> trackedNodes = RedstoneNode.trackedNodes.get(block);
-        if(trackedNodes == null) return;
+
         boolean contained = false;
-        for (RedstoneNode trackedNode : trackedNodes) {
-            // Remove tracked node
-            if(trackedNode.getPlayerNodeSession().equals(session)){
-                contained = true;
-                trackedNodes.remove(trackedNode);
-                RedstoneNode.trackedNodes.put(block, trackedNodes);
-                player.sendMessage("Removed node: " + trackedNode.getSelectedNodeIndex());
+        Set<RedstoneNode> trackedNodes = RedstoneNode.trackedNodes.get(block);
+        if(trackedNodes != null) {
+            for (RedstoneNode trackedNode : trackedNodes) {
+
+                // Remove tracked node from a block
+                if(trackedNode.getPlayerNodeSession().equals(session)){
+                    contained = true;
+                    trackedNodes.remove(trackedNode);
+                    RedstoneNode.trackedNodes.put(block, trackedNodes);
+                    player.sendMessage("Removed node: " + trackedNode.getSelectedNodeIndex());
+                }
             }
         }
+
         if(!contained) {
             trackedNodes.add(new RedstoneNode(trackedNodes.size(), player.getUniqueId(), session));
             RedstoneNode.trackedNodes.put(block, trackedNodes);
             player.sendMessage("Added node: " + (trackedNodes.size() - 1));
         }
-
-
-
-//        RedstoneNodeList playersNodes = RedstoneNode.playerSelectedNodes.get(player.getUniqueId()) == null ? new RedstoneNodeList() : RedstoneNode.playerSelectedNodes.get(player.getUniqueId());
-//
-//        // Block is node in the player's selected nodes
-//        if(playersNodes.getByBlock(block) == null){
-//            playersNodes.add(new RedstoneNode(block)); // Add to player's tracked nodes
-//            RedstoneNode.playerSelectedNodes.put(player.getUniqueId(), playersNodes);
-//
-//            // Add to globally tracked nodes if not already
-//            if(!RedstoneNode.trackedNodeActivations.containsKey(block)){
-//                RedstoneNode.trackedNodeActivations.put(block, -1L);
-//            }
-//
-//            Util.sendMessage(player, "Block selected ID:" + (playersNodes.size() -1 ) + "at" + "X:" + e.getClickedBlock().getX() + " Y:" + e.getClickedBlock().getY() + " Z:" + e.getClickedBlock().getZ());
-//        }
-//        // Remove block from player's nodes
-//        else {
-//            playersNodes.remove(playersNodes.getByBlock(block));
-//            // Handle it not tracked by anyone -> remove from tracked blocks forever
-//        }
     }
 
 }

@@ -20,6 +20,7 @@ public class RedstoneNodeUpdateEvent extends Event {
 
     public RedstoneNodeUpdateEvent(Block block){
         Set<RedstoneNode> updatedNodes = RedstoneNode.trackedNodes.get(block);
+        if(updatedNodes == null) return;
         for (RedstoneNode updatedNode : updatedNodes) {
             updatedNode.onTick();
         }

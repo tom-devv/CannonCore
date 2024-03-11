@@ -21,6 +21,7 @@ public class PlayerNodeSession {
     }
 
     public void onTick(RedstoneNode node){
+
         long diff = 0;
         if(CannonCore.getCurrentTick() - lastNodeActivationTick <= DECAY_TICKS){
             lastNodeActivationTick = CannonCore.getCurrentTick();
