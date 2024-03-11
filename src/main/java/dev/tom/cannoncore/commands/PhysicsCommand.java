@@ -33,6 +33,9 @@ public class PhysicsCommand extends CannonCoreCommand implements Listener {
                 .setArguments(new PhysicsVersionArgument())
                 .executesPlayer((player, strings) -> {
                     CannonPlayer cannonPlayer = CannonPlayer.getCannonPlayer(player);
+                    if(!CannonCore.isSakuraEnabled()) {
+                        cannonPlayer.sendMessage("&cThis feature is not enabled.");
+                    }
                     Plot plot = cannonPlayer.getCurrentPlot();
                     plotPhysics.put(plot, PhysicsVersion.of(strings[0]));
                 });
@@ -40,6 +43,7 @@ public class PhysicsCommand extends CannonCoreCommand implements Listener {
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent e){
+        if(!CannonCore.isSakuraEnabled()) return;
         Entity entity = e.getEntity();
         Plot plot = Plot.getPlot(
                 Location.at(

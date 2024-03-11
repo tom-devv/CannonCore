@@ -34,6 +34,10 @@ public class TNTFlowCommand extends CannonCoreCommand implements Listener {
                         .setConditions(new PlotEditCondition())
                         .executesPlayer((sender, strings) -> {
                             CannonPlayer player = CannonPlayer.getCannonPlayer(sender);
+                            if(!CannonCore.isSakuraEnabled()){
+                                player.sendMessage("&cThis feature is not enabled.");
+                                return;
+                            }
                             Plot plot = player.getCurrentPlot();
                             if(flowPlots.contains(player.getCurrentPlot())){
                                 flowPlots.remove(plot);
@@ -47,7 +51,7 @@ public class TNTFlowCommand extends CannonCoreCommand implements Listener {
 
     @EventHandler
     public void onTNTSpawn(EntitySpawnEvent e){
-        if(!(e.getEntity() instanceof TNTPrimed)) return;
+        if(!(e.getEntity() instanceof TNTPrimed) || !CannonCore.isSakuraEnabled()) return;
         TNTPrimed tnt = (TNTPrimed) e.getEntity();
         Location location = Location.at(tnt.getLocation().getWorld().getName(), tnt.getLocation().getBlockX(), tnt.getLocation().getBlockY(), tnt.getLocation().getBlockZ());
         if(flowPlots.contains(Plot.getPlot(location))){
