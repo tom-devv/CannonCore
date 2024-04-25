@@ -54,5 +54,8 @@ public class ChatMessages extends AnnotatedConfig {
     @ConfigField(path = "message.node.receive")
     public List<String> nodereceive = Arrays.asList("&7You have received a node");
 
+    @ConfigField(path = "plot.noplot")
+    public String notinplot = "&cYou are not in a plot!";
+
     }
 
