@@ -4,9 +4,10 @@ import dev.tom.cannoncore.CannonCore;
 import dev.tom.cannoncore.Util;
 import dev.tom.cannoncore.events.RedstoneNodeUpdateEvent;
 import dev.tom.cannoncore.items.AbstractCannonItem;
-import dev.tom.cannoncore.objects.PlayerNodeSession;
-import dev.tom.cannoncore.objects.RedstoneNode;
+import dev.tom.cannoncore.node.Node;
+import dev.tom.cannoncore.node.NodeArray;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -22,6 +23,9 @@ import java.util.*;
 
 public class NodeListeners implements Listener {
 
+    public static Map<Player, NodeArray> nodeArrays = new HashMap<>();
+    public static Set<Location> trackedNodes = new HashSet<>();
+
     Set<Material> redstoneNodes = new HashSet<>(Arrays.asList(
             Material.OBSERVER,
             Material.REDSTONE,
@@ -36,8 +40,6 @@ public class NodeListeners implements Listener {
     )
     );
 
-
-
     public NodeListeners(){
         CannonCore.getCore().getServer().getPluginManager().registerEvents(this, CannonCore.getCore());
     }
@@ -45,7 +47,6 @@ public class NodeListeners implements Listener {
 
     @EventHandler
     public void onDispense(BlockDispenseEvent e){
-        if(!RedstoneNode.trackedNodes.containsKey(e.getBlock())) return;
         RedstoneNodeUpdateEvent event = new RedstoneNodeUpdateEvent(e.getBlock());
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
@@ -74,7 +75,7 @@ public class NodeListeners implements Listener {
         if(!AbstractCannonItem.getIdentifier(itemMainHand, "node").equalsIgnoreCase("nodestick")) return;
 
         if(e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)){
-            PlayerNodeSession.nodeSessions.remove(e.getPlayer().getUniqueId());
+            nodeArrays.remove(e.getPlayer());
             Util.sendMessage(e.getPlayer(), "Cleared selected nodes");
             return;
         }
@@ -83,37 +84,23 @@ public class NodeListeners implements Listener {
         if(!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         if(!redstoneNodes.contains(e.getClickedBlock().getType())) return;
 
-
         e.setCancelled(true);
+
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
 
+        trackedNodes.add(block.getLocation());
 
-        PlayerNodeSession session = PlayerNodeSession.nodeSessions.get(player.getUniqueId());
-        if(session == null){
-            session = new PlayerNodeSession();
+        NodeArray nodeArray = new NodeArray();
+        if(nodeArrays.containsKey(player)){
+            nodeArray = nodeArrays.get(player);
         }
+        Node node = new Node(block.getLocation(), -1);
+        nodeArray.addNode(node);
 
-        boolean contained = false;
-        Set<RedstoneNode> trackedNodes = RedstoneNode.trackedNodes.get(block);
-        if(trackedNodes != null) {
-            for (RedstoneNode trackedNode : trackedNodes) {
+        nodeArrays.put(player, nodeArray);
 
-                // Remove tracked node from a block
-                if(trackedNode.getPlayerNodeSession().equals(session)){
-                    contained = true;
-                    trackedNodes.remove(trackedNode);
-                    RedstoneNode.trackedNodes.put(block, trackedNodes);
-                    player.sendMessage("Removed node: " + trackedNode.getSelectedNodeIndex());
-                }
-            }
-        }
-
-        if(!contained) {
-            trackedNodes.add(new RedstoneNode(trackedNodes.size(), player.getUniqueId(), session));
-            RedstoneNode.trackedNodes.put(block, trackedNodes);
-            player.sendMessage("Added node: " + (trackedNodes.size() - 1));
-        }
+        player.sendMessage("Added node: " + nodeArray.getIndex(node));
     }
 
 }

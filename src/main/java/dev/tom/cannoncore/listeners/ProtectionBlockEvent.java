@@ -45,6 +45,8 @@ public class ProtectionBlockEvent implements Listener {
             return;
         }
 
+
+
         for (Block block : new ArrayList<>(e.blockList())) {
             int pairHash = Objects.hash(block.getWorld(), block.getX(), block.getZ());
             if (protectedCoords.contains(pairHash)){
