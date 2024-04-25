@@ -16,9 +16,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -95,6 +100,14 @@ public class Util {
         };
     }
 
+    public static String locationToString(Location location){
+        String world = location.getWorld().getName();
+        String x = String.valueOf(location.getBlockX());
+        String y = String.valueOf(location.getBlockY());
+        String z = String.valueOf(location.getBlockZ());
+        return world + "_" + x + "_" + y + "_" + z;
+    }
+
     public static void setBlocks(Set<Block> blocks, Material material, Location location){
         try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(location.getWorld()))) {
             Set<BlockVector3> blockVector3s = blocks.stream().map((block) -> BukkitAdapter.asBlockVector(block.getLocation())).collect(Collectors.toSet());
@@ -120,5 +133,33 @@ public class Util {
             session.replaceBlocks(region, mask, BlockTypes.get(to.name().toLowerCase()));
         };
     }
+
+    public static ItemStack createItemStack(Material material, int amount, String name, List<String> lore){
+        ItemStack itemStack = new ItemStack(material, amount);
+        ItemMeta meta = itemStack.getItemMeta();
+        if (name != null)
+            meta.setDisplayName(colorize(name));
+        meta.setLore(colorize(lore));
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    public static ItemStack createItemStack(Material material, int amount, String name, String... lore){
+        return createItemStack(material, amount, name, Arrays.asList(lore));
+    }
+
+    public static ItemStack createItemStack(Material material, int amount){
+        return createItemStack(material, amount, null);
+    }
+
+
+    public static void addEnchantToItem (ItemStack item, Enchantment enchantment, int level, boolean hideEnchants) {
+        ItemMeta meta = item.getItemMeta();
+        meta.addEnchant(enchantment, level, true);
+        if (hideEnchants)
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+    }
+
 
 }
