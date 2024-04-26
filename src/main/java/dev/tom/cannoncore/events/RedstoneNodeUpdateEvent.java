@@ -35,6 +35,11 @@ public class RedstoneNodeUpdateEvent extends Event {
                 // Node in array was activated
                 if(node.getLocation().equals(block.getLocation())){
 
+                    if(node == head){
+                        node.setActivated(CannonCore.getCurrentTick());
+                        Util.sendMessage(player, "ID: " + nodeArray.getIndex(node) + " ACTIVATED = " + (node.getActivated() - head.getActivated()));
+                        continue entryLoop;
+                    }
                     if(head == null){
                         head = node;
                         entry.getValue().setHead(node);
