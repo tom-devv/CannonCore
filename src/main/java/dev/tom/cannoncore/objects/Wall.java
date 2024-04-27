@@ -4,6 +4,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -24,7 +25,8 @@ public class Wall {
     private final EditSession editSession;
     private final LocalSession localSession;
     private final int y;
-    private final Vector directionVector;
+    private final Vector horizontalStep;
+    private final BlockVector3 forwardStep;
     private final BlockVector3 topLeft;
     private final BlockVector3 bottomRight;
 
@@ -38,35 +40,61 @@ public class Wall {
         this.localSession = WorldEdit.getInstance().getSessionManager().get(BukkitAdapter.adapt(player));
         this.editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(player.getWorld()));
         this.y = Math.min(player.getLocation().getBlockY(), 318);
-        this.directionVector = stepVector(direction);
+        this.horizontalStep = stepHorizontalVector(direction);
+        this.forwardStep = stepBlockVector3(direction);
 
         Location midLocation = player.getLocation();
         Location topMid = midLocation.clone().add(direction.getModX(), this.y, direction.getModZ());
         Location bottomMid = midLocation.clone().add(direction.getModX(), 0, direction.getModZ());
         topLeft = BukkitAdapter.asBlockVector(
                 topMid.add(
-                        directionVector.clone().multiply(width / 2)
+                        horizontalStep.clone().multiply(width / 2)
                 ).add(
-                        directionVector.clone().multiply(-1 * (amount / 2))
+                        horizontalStep.clone().multiply(-1 * (amount / 2))
                 )
         );
         bottomRight = BukkitAdapter.asBlockVector(
                 bottomMid.add(
-                        directionVector.clone().multiply(-1 * (width / 2))
+                        horizontalStep.clone().multiply(-1 * (width / 2))
                 ).add(
-                        directionVector.clone().multiply(amount / 2)
+                        horizontalStep.clone().multiply(amount / 2)
                 )
         );
     }
 
 
-    public void singleWall(int offset) {
+    public void create(int offset) {
         CuboidRegion blocks =  new CuboidRegion(topLeft, bottomRight);
+        // Step one closer
+        CuboidRegion frontWater = new CuboidRegion(
+                topLeft.add(getForwardStep()),
+                bottomRight.add(getForwardStep())
+        );
+        // Step one away
+        CuboidRegion backWater = new CuboidRegion(
+                topLeft.add(getForwardStep()),
+                bottomRight.add(getForwardStep())
+        );
         editSession.setBlocks((Region) blocks, BlockTypes.get(material.name()));
     }
 
 
-    private Vector stepVector(BlockFace dir) {
+    private BlockVector3 stepBlockVector3(BlockFace dir){
+        switch (dir){
+            case NORTH:
+                return BlockVector3.at(0, 0, -1);
+            case EAST:
+                return BlockVector3.at(1, 0, 0);
+            case SOUTH:
+                return BlockVector3.at(0, 0, 1);
+            case WEST:
+                return BlockVector3.at(-1, 0, 0);
+            default:
+                return BlockVector3.at(0, 0, 0);
+        }
+    }
+
+    private Vector stepHorizontalVector(BlockFace dir) {
         switch (dir) {
             case NORTH:
             case SOUTH:
@@ -111,8 +139,8 @@ public class Wall {
         return y;
     }
 
-    public Vector getDirectionVector() {
-        return directionVector;
+    public Vector getHorizontalStep() {
+        return horizontalStep;
     }
 
     public BlockVector3 getTopLeft() {
@@ -121,5 +149,9 @@ public class Wall {
 
     public BlockVector3 getBottomRight() {
         return bottomRight;
+    }
+
+    public BlockVector3 getForwardStep() {
+        return forwardStep;
     }
 }
