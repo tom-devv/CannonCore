@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.C;
 
 public class Wall {
 
@@ -21,6 +22,7 @@ public class Wall {
     private final Material material;
     private final int width;
     private final int amount;
+    private final int length;
     private final Player player;
     private final EditSession editSession;
     private final LocalSession localSession;
@@ -34,6 +36,8 @@ public class Wall {
     public Wall(Player player, int width, int amount, Material material, BlockFace direction) {
         this.player = player;
         this.width = width;
+        // Each wall is material + water & add one to the length
+        this.length = (amount * 2) + 1;
         this.amount = amount;
         this.material = material;
         this.direction = direction;
@@ -62,8 +66,14 @@ public class Wall {
         );
     }
 
+    public void water(){
+        BlockVector3 backRight = bottomRight.add(getForwardStep().multiply(length));
+        CuboidRegion blocks =  new CuboidRegion(topLeft, bottomRight.add());
+        editSession.setBlocks((Region) blocks, BlockTypes.get(material.name()));
+    }
 
-    public void create(int offset) {
+
+    public void sandwich(int offset) {
         CuboidRegion blocks =  new CuboidRegion(topLeft, bottomRight);
         // Step one closer
         CuboidRegion frontWater = new CuboidRegion(
@@ -72,8 +82,8 @@ public class Wall {
         );
         // Step one away
         CuboidRegion backWater = new CuboidRegion(
-                topLeft.add(getForwardStep()),
-                bottomRight.add(getForwardStep())
+                topLeft.add(getForwardStep().multiply(-1)),
+                bottomRight.add(getForwardStep().multiply(-1))
         );
         editSession.setBlocks((Region) blocks, BlockTypes.get(material.name()));
     }
